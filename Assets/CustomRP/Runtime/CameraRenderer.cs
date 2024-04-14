@@ -10,16 +10,18 @@ namespace CustomRP.Runtime
         private ScriptableRenderContext _context;
         private Camera _camera;
 
+        // name 必须与下面 BeginSample 和 EndSample 的名称相同
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         
         public void Render(ScriptableRenderContext context, Camera camera)
         {
             _context = context;
             _camera = camera;
+            
+            Setup();
 
             BeginSample();
             {
-                Setup();
                 DrawVisibleGeometry();
             }
             EndSample();
@@ -27,10 +29,15 @@ namespace CustomRP.Runtime
             Submit();
         }
 
+        // 为什么在 ScriptableRenderContext.SetupCameraProperties 前调用 CommandBuffer.ClearRenderTarget 是使用 Draw GL 清除渲染目标，
+        // 而在其之后调用就是使用 Clear（color+Z+stencil）清除渲染目标。
         private void Setup()
         {
             // 设置摄像机的全局着色器变量，例如视图投影矩阵 unity_MatrixVP。
             _context.SetupCameraProperties(_camera);
+            
+            _buffer.ClearRenderTarget(true, true, Color.clear);
+            ExecuteBuffer();
         }
 
         private void DrawVisibleGeometry()
