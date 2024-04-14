@@ -5,16 +5,25 @@ namespace CustomRP.Runtime
 {
     public class CameraRenderer
     {
+        private const string BufferName = "Render Camera";
+        
         private ScriptableRenderContext _context;
         private Camera _camera;
+
+        private readonly CommandBuffer _buffer = new() { name = BufferName };
         
         public void Render(ScriptableRenderContext context, Camera camera)
         {
             _context = context;
             _camera = camera;
 
-            Setup();
-            DrawVisibleGeometry();
+            BeginSample();
+            {
+                Setup();
+                DrawVisibleGeometry();
+            }
+            EndSample();
+            
             Submit();
         }
 
@@ -33,6 +42,26 @@ namespace CustomRP.Runtime
         private void Submit()
         {
             _context.Submit();
+        }
+
+        private void BeginSample()
+        {
+            _buffer.BeginSample(BufferName);
+            ExecuteBuffer();
+        }
+        
+        private void EndSample()
+        {
+            _buffer.EndSample(BufferName);
+            ExecuteBuffer();
+        }
+        
+        private void ExecuteBuffer() 
+        {
+            // 执行 Buffer（从 Buffer 中复制命令但不清除它）
+            _context.ExecuteCommandBuffer(_buffer);
+            // 清除 Buffer，以便下次使用
+            _buffer.Clear();
         }
     }
 }
