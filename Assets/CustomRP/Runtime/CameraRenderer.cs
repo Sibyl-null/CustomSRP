@@ -6,6 +6,8 @@ namespace CustomRP.Runtime
     public class CameraRenderer
     {
         private const string BufferName = "Render Camera";
+        // 当 Pass 没有 LightMode 标签时，使用此标签值作为默认值。
+        private static readonly ShaderTagId UnlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
         
         private ScriptableRenderContext _context;
         private Camera _camera;
@@ -58,6 +60,15 @@ namespace CustomRP.Runtime
 
         private void DrawVisibleGeometry()
         {
+            SortingSettings sortingSettings = new SortingSettings(_camera)
+            {
+                criteria = SortingCriteria.CommonOpaque
+            };
+            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
+            FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.all);
+            
+            _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
+
             // 该 Camera 参数仅为确定是否应该绘制天空盒（ClearFlag 字段）
             _context.DrawSkybox(_camera);
         }
