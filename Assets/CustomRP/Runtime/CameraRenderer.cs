@@ -12,11 +12,15 @@ namespace CustomRP.Runtime
 
         // name 必须与下面 BeginSample 和 EndSample 的名称相同
         private readonly CommandBuffer _buffer = new() { name = BufferName };
+        private CullingResults _cullingResults;
         
         public void Render(ScriptableRenderContext context, Camera camera)
         {
             _context = context;
             _camera = camera;
+            
+            if (Cull() == false)
+                return;
             
             Setup();
             
@@ -27,6 +31,19 @@ namespace CustomRP.Runtime
             EndSample();
             
             Submit();
+        }
+
+        private bool Cull()
+        {
+            // 尝试获取剔除参数
+            if (_camera.TryGetCullingParameters(out ScriptableCullingParameters p))
+            {
+                // 实际执行剔除
+                _cullingResults = _context.Cull(ref p);
+                return true;
+            }
+
+            return false;
         }
         
         private void Setup()
