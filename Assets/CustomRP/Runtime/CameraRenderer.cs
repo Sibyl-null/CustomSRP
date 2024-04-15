@@ -19,7 +19,7 @@ namespace CustomRP.Runtime
             _camera = camera;
             
             Setup();
-
+            
             BeginSample();
             {
                 DrawVisibleGeometry();
@@ -28,14 +28,13 @@ namespace CustomRP.Runtime
             
             Submit();
         }
-
-        // 为什么在 ScriptableRenderContext.SetupCameraProperties 前调用 CommandBuffer.ClearRenderTarget 是使用 Draw GL 清除渲染目标，
-        // 而在其之后调用就是使用 Clear（color+Z+stencil）清除渲染目标。
+        
         private void Setup()
         {
             // 设置摄像机的全局着色器变量，例如视图投影矩阵 unity_MatrixVP。
             _context.SetupCameraProperties(_camera);
             
+            // 在 SetupCameraProperties 之后调用，则使用 Clear 命令更高效。否则使用 Draw GL 命令清除。
             _buffer.ClearRenderTarget(true, true, Color.clear);
             ExecuteBuffer();
         }
