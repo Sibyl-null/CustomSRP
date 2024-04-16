@@ -5,7 +5,6 @@ namespace CustomRP.Runtime
 {
     public partial class CameraRenderer
     {
-        private const string BufferName = "Render Camera";
         // 当 Pass 没有 LightMode 标签时，使用此标签值作为默认值。
         private static readonly ShaderTagId UnlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
         
@@ -13,15 +12,23 @@ namespace CustomRP.Runtime
         private Camera _camera;
 
         // name 必须与下面 BeginSample 和 EndSample 的名称相同
-        private readonly CommandBuffer _buffer = new() { name = BufferName };
+        private readonly CommandBuffer _buffer = new();
         private CullingResults _cullingResults;
+
+        private string BufferName
+        {
+            get => _buffer.name;
+            set => _buffer.name = value;
+        }
         
         public void Render(ScriptableRenderContext context, Camera camera)
         {
             _context = context;
             _camera = camera;
 
+            PrepareBuffer();
             PrepareForSceneWindow();
+            
             if (Cull() == false)
                 return;
             

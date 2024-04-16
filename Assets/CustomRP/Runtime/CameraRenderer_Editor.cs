@@ -9,6 +9,15 @@ namespace CustomRP.Runtime
         partial void DrawUnsupportedShaders();
         partial void DrawGizmos();
         
+        private void PrepareBuffer()
+        {
+#if UNITY_EDITOR
+            BufferName = _camera.name;
+#else
+            BufferName = "Render Camera";           
+#endif
+        }
+        
 #if UNITY_EDITOR
         private static readonly Material ErrorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
         private static readonly ShaderTagId[] LegacyShaderTagIds =
