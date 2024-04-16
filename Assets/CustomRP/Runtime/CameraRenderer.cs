@@ -62,9 +62,18 @@ namespace CustomRP.Runtime
         {
             // 设置摄像机的全局着色器变量，例如视图投影矩阵 unity_MatrixVP。
             _context.SetupCameraProperties(_camera);
+
+            ClearRenderTarget();
+        }
+
+        /** 在 SetupCameraProperties 之后调用，则使用 Clear 命令更高效。否则使用 Draw GL 命令清除。 */
+        private void ClearRenderTarget()
+        {
+            CameraClearFlags flags = _camera.clearFlags;
             
-            // 在 SetupCameraProperties 之后调用，则使用 Clear 命令更高效。否则使用 Draw GL 命令清除。
-            _buffer.ClearRenderTarget(true, true, Color.clear);
+            _buffer.ClearRenderTarget(flags <= CameraClearFlags.Depth, flags <= CameraClearFlags.SolidColor,
+                flags == CameraClearFlags.SolidColor ? _camera.backgroundColor.linear : Color.clear);
+            
             ExecuteBuffer();
         }
 
