@@ -5,6 +5,7 @@ namespace CustomRP.Runtime
 {
     public partial class CameraRenderer
     {
+        partial void PrepareForSceneWindow();
         partial void DrawUnsupportedShaders();
         partial void DrawGizmos();
         
@@ -19,6 +20,15 @@ namespace CustomRP.Runtime
             new ShaderTagId("VertexLMRGBM"),
             new ShaderTagId("VertexLM")
         };
+
+        partial void PrepareForSceneWindow()
+        {
+            if (_camera.cameraType == CameraType.SceneView)
+            {
+                // 在 Scene 视图中正常渲染 ugui
+                ScriptableRenderContext.EmitWorldGeometryForSceneView(_camera);
+            }
+        }
         
         partial void DrawUnsupportedShaders()
         {

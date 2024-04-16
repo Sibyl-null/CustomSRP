@@ -20,7 +20,8 @@ namespace CustomRP.Runtime
         {
             _context = context;
             _camera = camera;
-            
+
+            PrepareForSceneWindow();
             if (Cull() == false)
                 return;
             
