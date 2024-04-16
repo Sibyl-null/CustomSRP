@@ -6,6 +6,7 @@ namespace CustomRP.Runtime
     public partial class CameraRenderer
     {
         partial void DrawUnsupportedShaders();
+        partial void DrawGizmos();
         
 #if UNITY_EDITOR
         private static readonly Material ErrorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
@@ -33,6 +34,15 @@ namespace CustomRP.Runtime
             }
 
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
+        }
+
+        partial void DrawGizmos()
+        {
+            if (UnityEditor.Handles.ShouldRenderGizmos())
+            {
+                _context.DrawGizmos(_camera, GizmoSubset.PreImageEffects);
+                _context.DrawGizmos(_camera, GizmoSubset.PostImageEffects);
+            }
         }
 #endif
     }

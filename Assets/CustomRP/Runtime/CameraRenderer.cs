@@ -30,6 +30,7 @@ namespace CustomRP.Runtime
             {
                 DrawVisibleGeometry();
                 DrawUnsupportedShaders();
+                DrawGizmos();
             }
             EndSample();
             
