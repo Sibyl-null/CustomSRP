@@ -17,6 +17,7 @@ namespace CustomRP.Runtime
             new ShaderTagId("VertexLMRGBM"),
             new ShaderTagId("VertexLM")
         };
+        private static readonly Material ErrorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
         
         private ScriptableRenderContext _context;
         private Camera _camera;
@@ -104,7 +105,10 @@ namespace CustomRP.Runtime
 
         private void DrawUnsupportedShaders()
         {
-            DrawingSettings drawingSettings = new DrawingSettings(LegacyShaderTagIds[0], new SortingSettings(_camera));
+            DrawingSettings drawingSettings = new DrawingSettings(LegacyShaderTagIds[0], new SortingSettings(_camera))
+            {
+                overrideMaterial = ErrorMaterial
+            };
             FilteringSettings filteringSettings = FilteringSettings.defaultValue;
 
             for (int i = 1; i < LegacyShaderTagIds.Length; i++)
