@@ -60,17 +60,36 @@ namespace CustomRP.Runtime
 
         private void DrawVisibleGeometry()
         {
+            DrawOpaque();
+
+            // 该 Camera 参数仅为确定是否应该绘制天空盒（ClearFlag 字段）
+            _context.DrawSkybox(_camera);
+
+            DrawTransparent();
+        }
+
+        private void DrawOpaque()
+        {
             SortingSettings sortingSettings = new SortingSettings(_camera)
             {
                 criteria = SortingCriteria.CommonOpaque
             };
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
-            FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.all);
+            FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
+        }
 
-            // 该 Camera 参数仅为确定是否应该绘制天空盒（ClearFlag 字段）
-            _context.DrawSkybox(_camera);
+        private void DrawTransparent()
+        {
+            SortingSettings sortingSettings = new SortingSettings(_camera)
+            {
+                criteria = SortingCriteria.CommonTransparent
+            };
+            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
+            FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
+            
+            _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
         }
 
         private void Submit()
