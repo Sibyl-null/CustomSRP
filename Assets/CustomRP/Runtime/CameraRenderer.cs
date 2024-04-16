@@ -3,21 +3,11 @@ using UnityEngine.Rendering;
 
 namespace CustomRP.Runtime
 {
-    public class CameraRenderer
+    public partial class CameraRenderer
     {
         private const string BufferName = "Render Camera";
         // 当 Pass 没有 LightMode 标签时，使用此标签值作为默认值。
         private static readonly ShaderTagId UnlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
-        private static readonly ShaderTagId[] LegacyShaderTagIds =
-        {
-            new ShaderTagId("Always"),
-            new ShaderTagId("ForwardBase"),
-            new ShaderTagId("PrepassBase"),
-            new ShaderTagId("Vertex"),
-            new ShaderTagId("VertexLMRGBM"),
-            new ShaderTagId("VertexLM")
-        };
-        private static readonly Material ErrorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
         
         private ScriptableRenderContext _context;
         private Camera _camera;
@@ -100,22 +90,6 @@ namespace CustomRP.Runtime
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
             
-            _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
-        }
-
-        private void DrawUnsupportedShaders()
-        {
-            DrawingSettings drawingSettings = new DrawingSettings(LegacyShaderTagIds[0], new SortingSettings(_camera))
-            {
-                overrideMaterial = ErrorMaterial
-            };
-            FilteringSettings filteringSettings = FilteringSettings.defaultValue;
-
-            for (int i = 1; i < LegacyShaderTagIds.Length; i++)
-            {
-                drawingSettings.SetShaderPassName(i, LegacyShaderTagIds[i]);
-            }
-
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
         }
 
