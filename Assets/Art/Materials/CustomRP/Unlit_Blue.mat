@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CustomRP_Unlit
+  m_Name: Unlit_Blue
   m_Shader: {fileID: 4800000, guid: 242ada89240b1d846b3ed5e34973353a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -26,5 +26,5 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _BaseColor: {r: 0.78113204, g: 0.5849881, b: 0.15770023, a: 1}
+    - _BaseColor: {r: 0.11764705, g: 0.49886447, b: 1, a: 1}
   m_BuildTextureStacks: []
