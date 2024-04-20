@@ -11,7 +11,7 @@ namespace CustomRP.Runtime
         public CustomRenderPipeline()
         {
             // 启用 SRP Batching
-            GraphicsSettings.useScriptableRenderPipelineBatching = true;
+            // GraphicsSettings.useScriptableRenderPipelineBatching = true;
         }
         
         protected override void Render(ScriptableRenderContext context, Camera[] cameras)

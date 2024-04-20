@@ -93,7 +93,11 @@ namespace CustomRP.Runtime
             {
                 criteria = SortingCriteria.CommonOpaque
             };
-            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
+            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
+            {
+                enableDynamicBatching = true,
+                enableInstancing = false
+            };
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
@@ -105,7 +109,11 @@ namespace CustomRP.Runtime
             {
                 criteria = SortingCriteria.CommonTransparent
             };
-            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings);
+            DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
+            {
+                enableDynamicBatching = true,
+                enableInstancing = false
+            };
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
             
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
