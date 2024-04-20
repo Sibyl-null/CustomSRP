@@ -10,6 +10,8 @@ namespace CustomRP.Runtime
         
         private ScriptableRenderContext _context;
         private Camera _camera;
+        private bool _useDynamicBatching;
+        private bool _useGPUInstancing;
 
         // name 必须与下面 BeginSample 和 EndSample 的名称相同
         private readonly CommandBuffer _buffer = new();
@@ -21,10 +23,12 @@ namespace CustomRP.Runtime
             set => _buffer.name = value;
         }
         
-        public void Render(ScriptableRenderContext context, Camera camera)
+        public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing)
         {
             _context = context;
             _camera = camera;
+            _useDynamicBatching = useDynamicBatching;
+            _useGPUInstancing = useGPUInstancing;
 
             PrepareBuffer();
             PrepareForSceneWindow();
@@ -95,8 +99,8 @@ namespace CustomRP.Runtime
             };
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
             {
-                enableDynamicBatching = true,
-                enableInstancing = false
+                enableDynamicBatching = _useDynamicBatching,
+                enableInstancing = _useGPUInstancing
             };
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             
@@ -111,8 +115,8 @@ namespace CustomRP.Runtime
             };
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
             {
-                enableDynamicBatching = true,
-                enableInstancing = false
+                enableDynamicBatching = _useDynamicBatching,
+                enableInstancing = _useGPUInstancing
             };
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
             

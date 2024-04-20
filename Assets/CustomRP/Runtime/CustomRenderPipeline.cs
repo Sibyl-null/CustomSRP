@@ -6,12 +6,16 @@ namespace CustomRP.Runtime
 {
     public class CustomRenderPipeline : RenderPipeline
     {
+        private readonly bool _useDynamicBatching;
+        private readonly bool _useGPUInstancing;
+        
         private readonly CameraRenderer _renderer = new CameraRenderer();
 
-        public CustomRenderPipeline()
+        public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSrpBatching)
         {
-            // 启用 SRP Batching
-            // GraphicsSettings.useScriptableRenderPipelineBatching = true;
+            _useDynamicBatching = useDynamicBatching;
+            _useGPUInstancing = useGPUInstancing;
+            GraphicsSettings.useScriptableRenderPipelineBatching = useSrpBatching;
         }
         
         protected override void Render(ScriptableRenderContext context, Camera[] cameras)
@@ -25,7 +29,7 @@ namespace CustomRP.Runtime
             // 后续可以让不同的 CameraRenderer 处理不同的 Camera
             foreach (Camera camera in cameras)
             {
-                _renderer.Render(context, camera);
+                _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing);
             }
         }
     }
