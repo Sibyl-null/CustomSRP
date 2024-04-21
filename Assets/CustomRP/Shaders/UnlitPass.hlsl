@@ -50,7 +50,10 @@ float4 UnlitPassFragment(Varyings input) : SV_TARGET
     
     float4 base = baseMap * baseColor;
     float cutoff = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
+    
+    #ifdef _CLIPPING
     clip(base.a - cutoff);
+    #endif
     
     return base;
 }
