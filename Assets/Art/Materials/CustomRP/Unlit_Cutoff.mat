@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_Yellow
+  m_Name: Unlit_Cutoff
   m_Shader: {fileID: 4800000, guid: 242ada89240b1d846b3ed5e34973353a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 2450
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -29,9 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DstBlend: 10
-    - _SrcBlend: 5
-    - _ZWrite: 0
+    - _Cutoff: 0.5
+    - _DstBlend: 0
+    - _SrcBlend: 1
+    - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.9236794, b: 0.43584898, a: 1}
+    - _BaseColor: {r: 1, g: 0.9236794, b: 0.43584895, a: 1}
   m_BuildTextureStacks: []
