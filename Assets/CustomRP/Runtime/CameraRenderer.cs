@@ -7,6 +7,7 @@ namespace CustomRP.Runtime
     {
         // 当 Pass 没有 LightMode 标签时，使用此标签值作为默认值。
         private static readonly ShaderTagId UnlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+        private static readonly ShaderTagId LitShaderTagId = new ShaderTagId("CustomLit");
         
         private ScriptableRenderContext _context;
         private Camera _camera;
@@ -102,6 +103,7 @@ namespace CustomRP.Runtime
                 enableDynamicBatching = _useDynamicBatching,
                 enableInstancing = _useGPUInstancing
             };
+            drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
@@ -118,6 +120,7 @@ namespace CustomRP.Runtime
                 enableDynamicBatching = _useDynamicBatching,
                 enableInstancing = _useGPUInstancing
             };
+            drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
             
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
