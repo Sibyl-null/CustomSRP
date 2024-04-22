@@ -57,7 +57,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     clip(base.a - cutoff);
     #endif
 
-    base.rgb = input.normalWS;
+    base.rgb = normalize(input.normalWS);
     return base;
 }
 
