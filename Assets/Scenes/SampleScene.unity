@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028326, g: 0.22571333, b: 0.30692202, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -244,7 +244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &10177572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  _material: {fileID: 2100000, guid: 7c4a18353b6316248aec6c9874841a3d, type: 2}
+  _material: {fileID: 2100000, guid: 2179a401799441c4cb6fc876c7e9ba9a, type: 2}
 --- !u!4 &10177573
 Transform:
   m_ObjectHideFlags: 0
@@ -498,6 +498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.2396226, g: 1, b: 0.88306737, a: 1}
+  _cutoff: 0.5
 --- !u!1 &57424891
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,7 +1039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &144557280
 Transform:
   m_ObjectHideFlags: 0
@@ -2249,6 +2250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.9622642, g: 0, b: 0.51369256, a: 1}
+  _cutoff: 0.5
 --- !u!1 &521677381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2473,6 +2475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.3283019, g: 0.3283019, b: 0.3283019, a: 1}
+  _cutoff: 0.5
 --- !u!1 &555406371
 GameObject:
   m_ObjectHideFlags: 0
@@ -2592,6 +2595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 0.93134785, b: 0.3075471, a: 1}
+  _cutoff: 0.5
 --- !u!1 &557255304
 GameObject:
   m_ObjectHideFlags: 0
@@ -2711,6 +2715,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 0.4433962, b: 0.81159836, a: 1}
+  _cutoff: 0.5
 --- !u!1 &565927080
 GameObject:
   m_ObjectHideFlags: 0
@@ -3251,7 +3256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &678127047
 Transform:
   m_ObjectHideFlags: 0
@@ -4123,6 +4128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _cutoff: 0.5
 --- !u!1 &957177454
 GameObject:
   m_ObjectHideFlags: 0
@@ -5730,6 +5736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.39759105, g: 0.3671697, b: 0.5245282, a: 1}
+  _cutoff: 0.5
 --- !u!1 &1258860834
 GameObject:
   m_ObjectHideFlags: 0
@@ -5850,7 +5857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1273614124
 Transform:
   m_ObjectHideFlags: 0
@@ -6734,6 +6741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _cutoff: 0.5
 --- !u!1 &1485708464
 GameObject:
   m_ObjectHideFlags: 0
@@ -6854,7 +6862,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1516741555
 Transform:
   m_ObjectHideFlags: 0
@@ -7002,6 +7010,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.96981126, g: 0, b: 0, a: 1}
+  _cutoff: 0.5
 --- !u!1 &1657933037
 GameObject:
   m_ObjectHideFlags: 0
@@ -7332,7 +7341,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1769330298
 Transform:
   m_ObjectHideFlags: 0
@@ -7582,6 +7591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.102470845, g: 1, b: 0.066037595, a: 1}
+  _cutoff: 0.5
 --- !u!1 &1910897294
 GameObject:
   m_ObjectHideFlags: 0
@@ -8331,6 +8341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 0.6342926, g: 0.42075467, b: 1, a: 1}
+  _cutoff: 0.5
 --- !u!1 &2012855910
 GameObject:
   m_ObjectHideFlags: 0
@@ -8555,6 +8566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _cutoff: 0.5
 --- !u!1 &2071203827
 GameObject:
   m_ObjectHideFlags: 0
@@ -8810,6 +8822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _cutoff: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
