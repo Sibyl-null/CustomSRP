@@ -2,6 +2,7 @@
 #define CUSTOM_LIT_PASS_INCLUDED
 
 #include "../ShaderLibrary/Common.hlsl"
+#include "../ShaderLibrary/Surface.hlsl"
 
 // 着色器资源，不能为每个实例创建
 TEXTURE2D(_BaseMap);
@@ -57,8 +58,12 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     clip(base.a - cutoff);
     #endif
 
-    base.rgb = normalize(input.normalWS);
-    return base;
+    Surface surface;
+    surface.normal = normalize(input.normalWS);
+    surface.color = base.rgb;
+    surface.alpha = base.a;
+    
+    return float4(surface.color, surface.alpha);
 }
 
 #endif // CUSTOM_LIT_PASS_INCLUDED
