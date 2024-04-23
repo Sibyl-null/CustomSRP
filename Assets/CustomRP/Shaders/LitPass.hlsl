@@ -3,6 +3,7 @@
 
 #include "../ShaderLibrary/Common.hlsl"
 #include "../ShaderLibrary/Surface.hlsl"
+#include "../ShaderLibrary/Lighting.hlsl"
 
 // 着色器资源，不能为每个实例创建
 TEXTURE2D(_BaseMap);
@@ -62,8 +63,9 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     surface.normal = normalize(input.normalWS);
     surface.color = base.rgb;
     surface.alpha = base.a;
-    
-    return float4(surface.color, surface.alpha);
+
+    float3 color = GetLighting(surface);
+    return float4(color, surface.alpha);
 }
 
 #endif // CUSTOM_LIT_PASS_INCLUDED
