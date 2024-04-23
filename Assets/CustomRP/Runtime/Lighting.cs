@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace CustomRP.Runtime
@@ -10,17 +11,25 @@ namespace CustomRP.Runtime
         private static readonly int DirLightDirectionId = Shader.PropertyToID("_DirectionalLightDirection");
 
         private readonly CommandBuffer _buffer = new() { name = BufferName };
+        private CullingResults _cullingResults;
 
-        public void Setup(ScriptableRenderContext context)
+        public void Setup(ScriptableRenderContext context, CullingResults cullingResults)
         {
+            _cullingResults = cullingResults;
+            
             _buffer.BeginSample(BufferName);
             {
-                SetupDirectionalLight();
+                SetupLights();
             }
             _buffer.EndSample(BufferName);
             
             context.ExecuteCommandBuffer(_buffer);
             _buffer.Clear();
+        }
+
+        private void SetupLights()
+        {
+            NativeArray<VisibleLight> lights = _cullingResults.visibleLights;
         }
 
         private void SetupDirectionalLight()

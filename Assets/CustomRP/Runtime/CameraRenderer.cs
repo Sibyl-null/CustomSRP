@@ -14,8 +14,7 @@ namespace CustomRP.Runtime
         private bool _useDynamicBatching;
         private bool _useGPUInstancing;
 
-        private Lighting _lighting = new();
-        // name 必须与下面 BeginSample 和 EndSample 的名称相同
+        private readonly Lighting _lighting = new();
         private readonly CommandBuffer _buffer = new();
         private CullingResults _cullingResults;
 
@@ -42,7 +41,7 @@ namespace CustomRP.Runtime
             
             BeginSample();
             {
-                _lighting.Setup(context);
+                _lighting.Setup(context, _cullingResults);
                 DrawVisibleGeometry();
                 DrawUnsupportedShaders();
                 DrawGizmos();
