@@ -7,8 +7,14 @@ namespace CustomRP.Runtime
     public class Lighting
     {
         private const string BufferName = "Lighting";
-        private static readonly int DirLightColorId = Shader.PropertyToID("_DirectionalLightColor");
-        private static readonly int DirLightDirectionId = Shader.PropertyToID("_DirectionalLightDirection");
+        private const int MaxDirLightCount = 4;     // 最大方向光数量
+        
+        private static readonly int DirLightCountId = Shader.PropertyToID("_DirectionalLightCount");
+        private static readonly int DirLightColorsId = Shader.PropertyToID("_DirectionalLightColors");
+        private static readonly int DirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections");
+        
+        private static readonly Vector4[] DirLightColors = new Vector4[MaxDirLightCount];
+        private static readonly Vector4[] DirLightDirections = new Vector4[MaxDirLightCount];
 
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         private CullingResults _cullingResults;
@@ -29,14 +35,29 @@ namespace CustomRP.Runtime
 
         private void SetupLights()
         {
+            int dirLightCount = 0;
             NativeArray<VisibleLight> lights = _cullingResults.visibleLights;
+
+            for (int i = 0; i < lights.Length; i++)
+            {
+                VisibleLight light = lights[i];
+                if (light.lightType == LightType.Directional)
+                    SetupDirectionalLight(dirLightCount++, ref light);
+
+                if (dirLightCount >= MaxDirLightCount)
+                    break;
+            }
+
+            _buffer.SetGlobalInt(DirLightCountId, dirLightCount);
+            _buffer.SetGlobalVectorArray(DirLightColorsId, DirLightColors);
+            _buffer.SetGlobalVectorArray(DirLightDirectionsId, DirLightDirections);
         }
 
-        private void SetupDirectionalLight()
+        // VisibleLight 结构相当大，使用 ref 引用传递避免拷贝
+        private void SetupDirectionalLight(int index, ref VisibleLight visibleLight)
         {
-            Light light = RenderSettings.sun;
-            _buffer.SetGlobalVector(DirLightColorId, light.color.linear * light.intensity);
-            _buffer.SetGlobalVector(DirLightDirectionId, -light.transform.forward);
+            DirLightColors[index] = visibleLight.finalColor;
+            DirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
         }
     }
 }

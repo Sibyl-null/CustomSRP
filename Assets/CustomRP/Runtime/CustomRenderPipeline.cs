@@ -16,6 +16,7 @@ namespace CustomRP.Runtime
             _useDynamicBatching = useDynamicBatching;
             _useGPUInstancing = useGPUInstancing;
             GraphicsSettings.useScriptableRenderPipelineBatching = useSrpBatching;
+            GraphicsSettings.lightsUseLinearIntensity = true;
         }
         
         protected override void Render(ScriptableRenderContext context, Camera[] cameras)
