@@ -19,12 +19,16 @@ float OneMinusReflectivity(float metallic)
 
 BRDF GetBRDF(Surface surface)
 {
-    float oneMinusReflectivity = OneMinusReflectivity(surface.metallic);
-    
     BRDF brdf;
+    
+    float oneMinusReflectivity = OneMinusReflectivity(surface.metallic);
     brdf.diffuse = surface.color * oneMinusReflectivity;
     brdf.specular = lerp(MIN_REFLECTIVITY * 1.0, surface.color, surface.metallic);;
-    brdf.roughness = 1;
+
+    // 知觉光滑度 -> 知觉粗糙度
+    float perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(surface.smoothness);
+    // 知觉粗糙度 -> 真实粗糙度
+    brdf.roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
     return brdf;
 }
 
