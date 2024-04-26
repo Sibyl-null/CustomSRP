@@ -12,6 +12,8 @@ namespace CustomRP.Editor
         private List<Material> _materials;
         private MaterialProperty[] _properties;
 
+        private bool _showPresets;
+
         private bool Clipping
         {
             set => SetProperty("_Clipping", "_CLIPPING", value);
@@ -26,7 +28,7 @@ namespace CustomRP.Editor
         {
             set => SetProperty("_SrcBlend", (float)value);
         }
-        
+
         private BlendMode DstBlend
         {
             set => SetProperty("_DstBlend", (float)value);
@@ -41,13 +43,23 @@ namespace CustomRP.Editor
         {
             set => _materials.ForEach(m => m.renderQueue = (int)value);
         }
-         
+
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
             base.OnGUI(materialEditor, properties);
             _editor = materialEditor;
             _materials = materialEditor.targets.Cast<Material>().ToList();
             _properties = properties;
+
+            EditorGUILayout.Space();
+            _showPresets = EditorGUILayout.Foldout(_showPresets, "Presets", true);
+            if (_showPresets)
+            {
+                OpaquePreset();
+                ClipPreset();
+                FadePreset();
+                TransparentPreset();
+            }
         }
 
         private void SetProperty(string name, float value)
@@ -71,6 +83,78 @@ namespace CustomRP.Editor
         {
             SetProperty(name, value ? 1 : 0);
             SetKeyword(keyword, value);
+        }
+
+
+        // ----------------------------------------------------------------------
+        // Preset Buttons
+        // ----------------------------------------------------------------------
+
+        private bool PresetButton(string name)
+        {
+            if (GUILayout.Button(name))
+            {
+                _editor.RegisterPropertyChangeUndo(name);
+                return true;
+            }
+
+            return false;
+        }
+
+        /** 标准不透明物体 */
+        private void OpaquePreset()
+        {
+            if (PresetButton("Opaque"))
+            {
+                Clipping = false;
+                PremultiplyAlpha = false;
+                SrcBlend = BlendMode.One;
+                DstBlend = BlendMode.Zero;
+                ZWrite = true;
+                RenderQueue = RenderQueue.Geometry;
+            }
+        }
+
+        /** 使用 AlphaClip 的不透明物体 */
+        private void ClipPreset()
+        {
+            if (PresetButton("Clip"))
+            {
+                Clipping = true;
+                PremultiplyAlpha = false;
+                SrcBlend = BlendMode.One;
+                DstBlend = BlendMode.Zero;
+                ZWrite = true;
+                RenderQueue = RenderQueue.AlphaTest;
+            }
+        }
+
+        /** 标准半透明物体，但光照不正确 */
+        private void FadePreset()
+        {
+            if (PresetButton("Fade"))
+            {
+                Clipping = false;
+                PremultiplyAlpha = false;
+                SrcBlend = BlendMode.SrcAlpha;
+                DstBlend = BlendMode.OneMinusSrcAlpha;
+                ZWrite = false;
+                RenderQueue = RenderQueue.Transparent;
+            }
+        }
+
+        /** 具有正确光照的半透明物体 */
+        private void TransparentPreset()
+        {
+            if (PresetButton("Transparent"))
+            {
+                Clipping = false;
+                PremultiplyAlpha = true;
+                SrcBlend = BlendMode.One;
+                DstBlend = BlendMode.OneMinusSrcAlpha;
+                ZWrite = false;
+                RenderQueue = RenderQueue.Transparent;
+            }
         }
     }
 }
