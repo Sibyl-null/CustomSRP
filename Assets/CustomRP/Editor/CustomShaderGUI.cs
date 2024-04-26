@@ -62,9 +62,16 @@ namespace CustomRP.Editor
             }
         }
 
-        private void SetProperty(string name, float value)
+        private bool SetProperty(string name, float value)
         {
-            FindProperty(name, _properties).floatValue = value;
+            MaterialProperty property = FindProperty(name, _properties, false);
+            if (property != null)
+            {
+                property.floatValue = value;
+                return true;
+            }
+
+            return false;
         }
 
         private void SetKeyword(string keyword, bool enabled)
@@ -81,8 +88,8 @@ namespace CustomRP.Editor
 
         private void SetProperty(string name, string keyword, bool value)
         {
-            SetProperty(name, value ? 1 : 0);
-            SetKeyword(keyword, value);
+            if (SetProperty(name, value ? 1 : 0))
+                SetKeyword(keyword, value);
         }
 
 

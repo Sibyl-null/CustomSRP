@@ -29,4 +29,6 @@ Shader "CustomRP/Unlit"
             ENDHLSL
         }
     }
+
+    CustomEditor "CustomRP.Editor.CustomShaderGUI"
 }
