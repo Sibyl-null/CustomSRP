@@ -8,13 +8,16 @@ namespace CustomRP.Runtime
     {
         private readonly bool _useDynamicBatching;
         private readonly bool _useGPUInstancing;
+        private readonly ShadowSettings _shadowSettings;
         
         private readonly CameraRenderer _renderer = new CameraRenderer();
 
-        public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSrpBatching)
+        public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing, bool useSrpBatching, ShadowSettings shadowSettings)
         {
             _useDynamicBatching = useDynamicBatching;
             _useGPUInstancing = useGPUInstancing;
+            _shadowSettings = shadowSettings;
+            
             GraphicsSettings.useScriptableRenderPipelineBatching = useSrpBatching;
             GraphicsSettings.lightsUseLinearIntensity = true;
         }
