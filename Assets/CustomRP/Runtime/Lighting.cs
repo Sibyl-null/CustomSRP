@@ -19,7 +19,7 @@ namespace CustomRP.Runtime
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         private CullingResults _cullingResults;
 
-        public void Setup(ScriptableRenderContext context, CullingResults cullingResults)
+        public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
         {
             _cullingResults = cullingResults;
             

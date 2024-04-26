@@ -33,7 +33,7 @@ namespace CustomRP.Runtime
             // 后续可以让不同的 CameraRenderer 处理不同的 Camera
             foreach (Camera camera in cameras)
             {
-                _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing);
+                _renderer.Render(context, camera, _useDynamicBatching, _useGPUInstancing, _shadowSettings);
             }
         }
     }

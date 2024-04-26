@@ -24,7 +24,7 @@ namespace CustomRP.Runtime
             set => _buffer.name = value;
         }
         
-        public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing)
+        public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing, ShadowSettings shadowSettings)
         {
             _context = context;
             _camera = camera;
@@ -34,14 +34,14 @@ namespace CustomRP.Runtime
             PrepareBuffer();
             PrepareForSceneWindow();
             
-            if (Cull() == false)
+            if (Cull(shadowSettings.maxDistance) == false)
                 return;
             
             Setup();
             
             BeginSample();
             {
-                _lighting.Setup(context, _cullingResults);
+                _lighting.Setup(context, _cullingResults, shadowSettings);
                 DrawVisibleGeometry();
                 DrawUnsupportedShaders();
                 DrawGizmos();
@@ -51,13 +51,13 @@ namespace CustomRP.Runtime
             Submit();
         }
 
-        private bool Cull()
+        private bool Cull(float maxShadowDistance)
         {
             // 尝试获取剔除参数
             if (_camera.TryGetCullingParameters(out ScriptableCullingParameters p))
             {
-                // 实际执行剔除
-                _cullingResults = _context.Cull(ref p);
+                p.shadowDistance = Mathf.Min(maxShadowDistance, _camera.farClipPlane);
+                _cullingResults = _context.Cull(ref p);     // 实际执行剔除
                 return true;
             }
 
