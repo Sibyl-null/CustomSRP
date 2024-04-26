@@ -15,4 +15,6 @@ float4x4 unity_prev_MatrixM;            // 上一帧的模型矩阵
 float4x4 unity_prev_MatrixIM;           // 上一帧的逆模型矩阵
 float4x4 glstate_matrix_projection;     // 投影矩阵
 
+float3 _WorldSpaceCameraPos;            // 世界空间相机位置
+
 #endif // CUSTOM_UNITY_INPUT_INCLUDED
