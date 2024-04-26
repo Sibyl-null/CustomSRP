@@ -19,6 +19,8 @@ namespace CustomRP.Editor
             set => SetProperty("_Clipping", "_CLIPPING", value);
         }
 
+        private bool HasPremultiplyAlpha => HasProperty("_PremulAlpha");
+
         private bool PremultiplyAlpha
         {
             set => SetProperty("_PremulAlpha", "_PREMULTIPLY_ALPHA", value);
@@ -91,6 +93,11 @@ namespace CustomRP.Editor
             if (SetProperty(name, value ? 1 : 0))
                 SetKeyword(keyword, value);
         }
+        
+        private bool HasProperty(string name)
+        {
+            return FindProperty(name, _properties, false) != null;
+        }
 
 
         // ----------------------------------------------------------------------
@@ -153,7 +160,7 @@ namespace CustomRP.Editor
         /** 具有正确光照的半透明物体 */
         private void TransparentPreset()
         {
-            if (PresetButton("Transparent"))
+            if (HasPremultiplyAlpha && PresetButton("Transparent"))
             {
                 Clipping = false;
                 PremultiplyAlpha = true;
