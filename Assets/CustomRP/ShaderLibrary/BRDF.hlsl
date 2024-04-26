@@ -17,13 +17,16 @@ float OneMinusReflectivity(float metallic)
     return (1 - metallic) * range;
 }
 
-BRDF GetBRDF(Surface surface)
+BRDF GetBRDF(Surface surface, bool applyAlphaToDiffuse = false)
 {
     BRDF brdf;
     
     float oneMinusReflectivity = OneMinusReflectivity(surface.metallic);
     brdf.diffuse = surface.color * oneMinusReflectivity;
-    brdf.diffuse *= surface.alpha;   // alpha 预乘
+    if (applyAlphaToDiffuse)
+    {
+        brdf.diffuse *= surface.alpha;   // alpha 预乘
+    }
     
     brdf.specular = lerp(MIN_REFLECTIVITY * 1.0, surface.color, surface.metallic);;
 
