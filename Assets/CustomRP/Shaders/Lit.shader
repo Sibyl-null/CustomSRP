@@ -36,4 +36,6 @@ Shader "CustomRP/Lit"
             ENDHLSL
         }
     }
+
+    CustomEditor "CustomRP.Editor.CustomShaderGUI"
 }
