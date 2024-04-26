@@ -23,6 +23,8 @@ BRDF GetBRDF(Surface surface)
     
     float oneMinusReflectivity = OneMinusReflectivity(surface.metallic);
     brdf.diffuse = surface.color * oneMinusReflectivity;
+    brdf.diffuse *= surface.alpha;   // alpha 预乘
+    
     brdf.specular = lerp(MIN_REFLECTIVITY * 1.0, surface.color, surface.metallic);;
 
     // 知觉光滑度 -> 知觉粗糙度

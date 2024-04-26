@@ -329,7 +329,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &1190395414
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -371,7 +371,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 734f243a25f1f469a8371fd067f115fe, type: 2}
+  - {fileID: 2100000, guid: a9f09539a5a69434d9416a81b11fd457, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -618,7 +618,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1806862020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,5 +656,5 @@ SceneRoots:
   - {fileID: 547268020}
   - {fileID: 332537640}
   - {fileID: 1682787317}
-  - {fileID: 1190395417}
   - {fileID: 1806862021}
+  - {fileID: 1190395417}
