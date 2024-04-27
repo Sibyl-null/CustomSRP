@@ -12,6 +12,7 @@ namespace CustomRP.Runtime
         
         private const string BufferName = "Shadows";
         private const int MaxShadowedDirectionalLightCount = 1;
+        private static readonly int DirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
         
         private ScriptableRenderContext _context;
         private CullingResults _cullingResults;
@@ -51,6 +52,38 @@ namespace CustomRP.Runtime
             };
         }
         
+        public void Render()
+        {
+            if (_shadowedDirectionalLightCount > 0)
+            {
+                RenderDirectionalShadows();
+            }
+            else
+            {
+                // 无阴影时创建一个 1x1 的临时阴影贴图，防止 WebGL 2.0 出现问题。
+                _buffer.GetTemporaryRT(DirShadowAtlasId, 1, 1, 32, 
+                    FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
+            }
+        }
+
+        private void RenderDirectionalShadows()
+        {
+            int atlasSize = (int)_shadowSettings.directional.atlasSize;
+            _buffer.GetTemporaryRT(DirShadowAtlasId, atlasSize, atlasSize, 32, 
+                FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
+            _buffer.SetRenderTarget(DirShadowAtlasId, RenderBufferLoadAction.DontCare, 
+                RenderBufferStoreAction.Store);
+            _buffer.ClearRenderTarget(true, false, Color.clear);
+            
+            ExecuteBuffer();
+        }
+
+        public void Cleanup()
+        {
+            _buffer.ReleaseTemporaryRT(DirShadowAtlasId);
+            ExecuteBuffer();
+        }
+
         private void ExecuteBuffer() 
         {
             _context.ExecuteCommandBuffer(_buffer);

@@ -28,6 +28,7 @@ namespace CustomRP.Runtime
             {
                 _shadows.Setup(context, _cullingResults, shadowSettings);
                 SetupLights();
+                _shadows.Render();
             }
             _buffer.EndSample(BufferName);
             
@@ -61,6 +62,11 @@ namespace CustomRP.Runtime
             DirLightColors[index] = visibleLight.finalColor;
             DirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
             _shadows.ReserveDirectionalShadow(visibleLight.light, index);
+        }
+
+        public void Cleanup()
+        {
+            _shadows.Cleanup();
         }
     }
 }

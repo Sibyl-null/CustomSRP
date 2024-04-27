@@ -48,6 +48,7 @@ namespace CustomRP.Runtime
             }
             EndSample();
             
+            _lighting.Cleanup();
             Submit();
         }
 
