@@ -60,6 +60,7 @@ namespace CustomRP.Runtime
         {
             DirLightColors[index] = visibleLight.finalColor;
             DirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+            _shadows.ReserveDirectionalShadow(visibleLight.light, index);
         }
     }
 }
