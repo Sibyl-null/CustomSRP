@@ -17,6 +17,7 @@ namespace CustomRP.Runtime
         private static readonly Vector4[] DirLightDirections = new Vector4[MaxDirLightCount];
 
         private readonly CommandBuffer _buffer = new() { name = BufferName };
+        private readonly Shadows _shadows = new();
         private CullingResults _cullingResults;
 
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
@@ -25,6 +26,7 @@ namespace CustomRP.Runtime
             
             _buffer.BeginSample(BufferName);
             {
+                _shadows.Setup(context, _cullingResults, shadowSettings);
                 SetupLights();
             }
             _buffer.EndSample(BufferName);
