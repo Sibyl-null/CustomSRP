@@ -11,7 +11,7 @@ namespace CustomRP.Runtime
         }
         
         private const string BufferName = "Shadows";
-        private const int MaxShadowedDirectionalLightCount = 1;
+        private const int MaxShadowedDirectionalLightCount = 4;
         private static readonly int DirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
         
         private ScriptableRenderContext _context;
