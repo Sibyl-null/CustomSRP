@@ -37,11 +37,16 @@ namespace CustomRP.Runtime
             if (Cull(shadowSettings.maxDistance) == false)
                 return;
             
+            BeginSample();
+            {
+                _lighting.Setup(context, _cullingResults, shadowSettings);
+            }
+            EndSample();
+            
             Setup();
             
             BeginSample();
             {
-                _lighting.Setup(context, _cullingResults, shadowSettings);
                 DrawVisibleGeometry();
                 DrawUnsupportedShaders();
                 DrawGizmos();
@@ -69,7 +74,6 @@ namespace CustomRP.Runtime
         {
             // 设置摄像机的全局着色器变量，例如视图投影矩阵 unity_MatrixVP。
             _context.SetupCameraProperties(_camera);
-
             ClearRenderTarget();
         }
 
