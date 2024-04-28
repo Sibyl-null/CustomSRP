@@ -13,6 +13,7 @@ namespace CustomRP.Runtime
         private const string BufferName = "Shadows";
         private const int MaxShadowedDirectionalLightCount = 4;
         private static readonly int DirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
+        private static readonly int DirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices");
         
         private ScriptableRenderContext _context;
         private CullingResults _cullingResults;
@@ -21,8 +22,8 @@ namespace CustomRP.Runtime
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         
         private int _shadowedDirectionalLightCount;
-        private readonly ShadowedDirectionalLight[] _shadowedDirectionalLights =
-            new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
+        private readonly ShadowedDirectionalLight[] _shadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
+        private readonly Matrix4x4[] _dirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount];
 
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
         {
@@ -83,6 +84,8 @@ namespace CustomRP.Runtime
                 
                 for (int i = 0; i < _shadowedDirectionalLightCount; i++)
                     RenderDirectionalShadowInAtlas(i, split, tileSize);
+                
+                _buffer.SetGlobalMatrixArray(DirShadowMatricesId, _dirShadowMatrices);
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
@@ -101,6 +104,7 @@ namespace CustomRP.Runtime
             
             shadowDrawingSettings.splitData = splitData;
             SetTileViewport(index, split, tileSize);
+            _dirShadowMatrices[index] = projectionMatrix * viewMatrix;
             _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
             ExecuteBuffer();
