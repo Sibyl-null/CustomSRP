@@ -78,14 +78,17 @@ namespace CustomRP.Runtime
             _buffer.BeginSample(BufferName);
             ExecuteBuffer();
             {
+                int split = _shadowedDirectionalLightCount <= 1 ? 1 : 2;
+                int tileSize = atlasSize / split;
+                
                 for (int i = 0; i < _shadowedDirectionalLightCount; i++)
-                    RenderDirectionalShadowInAtlas(i, atlasSize);
+                    RenderDirectionalShadowInAtlas(i, split, tileSize);
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
         }
 
-        private void RenderDirectionalShadowInAtlas(int index, int tileSize)
+        private void RenderDirectionalShadowInAtlas(int index, int split, int tileSize)
         {
             ShadowedDirectionalLight light = _shadowedDirectionalLights[index];
             var shadowDrawingSettings = new ShadowDrawingSettings(_cullingResults, light.visibleLightIndex,
@@ -97,10 +100,18 @@ namespace CustomRP.Runtime
                 out ShadowSplitData splitData);
             
             shadowDrawingSettings.splitData = splitData;
+            SetTileViewport(index, split, tileSize);
             _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
             ExecuteBuffer();
             _context.DrawShadows(ref shadowDrawingSettings);
+        }
+
+        private void SetTileViewport(int index, int split, int tileSize)
+        {
+            int x = index % split;
+            int y = index / split;
+            _buffer.SetViewport(new Rect(x * tileSize, y * tileSize, tileSize, tileSize));
         }
 
         public void Cleanup()
