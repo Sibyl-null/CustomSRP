@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace CustomRP.Examples
@@ -34,6 +35,13 @@ namespace CustomRP.Examples
             _propertyBlock.SetFloat(MetallicId, _metallic);
             _propertyBlock.SetFloat(SmoothnessId, _smoothness);
             GetComponent<Renderer>().SetPropertyBlock(_propertyBlock);
+        }
+        
+        [Button]
+        public void RandomColor()
+        {
+            _baseColor = new Color(Random.value, Random.value, Random.value, 1);
+            Setup();
         }
     }
 }

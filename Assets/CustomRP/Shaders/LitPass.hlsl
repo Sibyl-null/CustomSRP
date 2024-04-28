@@ -60,8 +60,8 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     float4 base = baseMap * baseColor;
     
     #ifdef _CLIPPING
-    float cutoff = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
-    clip(base.a - cutoff);
+        float cutoff = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
+        clip(base.a - cutoff);
     #endif
 
     Surface surface;

@@ -20,7 +20,7 @@ Shader "CustomRP/Lit"
     {
         Pass
         {
-            Tags{ "LightMode" = "CustomLit" }
+            Tags { "LightMode" = "CustomLit" }
             
             Blend [_SrcBlend] [_DstBlend]
             ZWrite [_ZWrite]
@@ -33,6 +33,23 @@ Shader "CustomRP/Lit"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
             #include "LitPass.hlsl"
+            ENDHLSL
+        }
+
+        Pass
+        {
+            // 该 Pass 用于渲染阴影图集
+            Tags { "LightMode" = "ShadowCaster" }
+            
+            ColorMask 0     // 禁止写入颜色数据
+            
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma shader_feature _CLIPPING
+            #pragma multi_compile_instancing
+            #pragma vertex ShadowCasterPassVertex
+            #pragma fragment ShadowCasterPassFragment
+            #include "ShadowCasterPass.hlsl"
             ENDHLSL
         }
     }
