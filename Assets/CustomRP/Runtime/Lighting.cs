@@ -12,9 +12,11 @@ namespace CustomRP.Runtime
         private static readonly int DirLightCountId = Shader.PropertyToID("_DirectionalLightCount");
         private static readonly int DirLightColorsId = Shader.PropertyToID("_DirectionalLightColors");
         private static readonly int DirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections");
+        private static readonly int DirLightShadowDataId = Shader.PropertyToID("_DirectionalLightShadowData");
         
         private static readonly Vector4[] DirLightColors = new Vector4[MaxDirLightCount];
         private static readonly Vector4[] DirLightDirections = new Vector4[MaxDirLightCount];
+        private static readonly Vector4[] DirLightShadowData = new Vector4[MaxDirLightCount];
 
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         private readonly Shadows _shadows = new();
@@ -54,6 +56,7 @@ namespace CustomRP.Runtime
             _buffer.SetGlobalInt(DirLightCountId, dirLightCount);
             _buffer.SetGlobalVectorArray(DirLightColorsId, DirLightColors);
             _buffer.SetGlobalVectorArray(DirLightDirectionsId, DirLightDirections);
+            _buffer.SetGlobalVectorArray(DirLightShadowDataId, DirLightShadowData);
         }
 
         // VisibleLight 结构相当大，使用 ref 引用传递避免拷贝
@@ -61,7 +64,7 @@ namespace CustomRP.Runtime
         {
             DirLightColors[index] = visibleLight.finalColor;
             DirLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
-            _shadows.ReserveDirectionalShadow(visibleLight.light, index);
+            DirLightShadowData[index] = _shadows.ReserveDirectionalShadow(visibleLight.light, index);
         }
 
         public void Cleanup()

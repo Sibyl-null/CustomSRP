@@ -34,23 +34,28 @@ namespace CustomRP.Runtime
             _shadowedDirectionalLightCount = 0;
         }
 
-        /** 尝试为指定方向光在阴影图集中保留空间，并存储渲染它们所需的信息 */
-        public void ReserveDirectionalShadow(Light light, int visibleLightIndex)
+        /**
+         * 尝试为指定方向光在阴影图集中保留空间，并存储渲染它们所需的信息
+         * 返回 Vector2, x 表示光源的阴影强度，y 表示在阴影图集中的索引
+         */
+        public Vector2 ReserveDirectionalShadow(Light light, int visibleLightIndex)
         {
             if (_shadowedDirectionalLightCount >= MaxShadowedDirectionalLightCount)
-                return;
+                return Vector2.zero;
 
             if (light.shadows == LightShadows.None || light.shadowStrength <= 0f)
-                return;
+                return Vector2.zero;
             
             // 如果光源影响了至少一个阴影投射对象，则返回 true
             if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
-                return;
+                return Vector2.zero;
             
-            _shadowedDirectionalLights[_shadowedDirectionalLightCount++] = new ShadowedDirectionalLight()
+            _shadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
                 visibleLightIndex = visibleLightIndex
             };
+            
+            return new Vector2(light.shadowStrength, _shadowedDirectionalLightCount++);
         }
         
         public void Render()
