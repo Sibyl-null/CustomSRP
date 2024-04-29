@@ -133,18 +133,19 @@ namespace CustomRP.Runtime
                 m.m23 = -m.m23;
             }
 
-            Matrix4x4 matrix1 = new Matrix4x4(new Vector4(0.5f, 0.0f, 0.0f, 0.5f),
-                                             new Vector4(0.0f, 0.5f, 0.0f, 0.5f),
-                                             new Vector4(0.0f, 0.0f, 0.5f, 0.5f),
-                                             new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-            float scale = 1.0f / split;
-            Matrix4x4 matrix2 = new Matrix4x4(new Vector4(scale, 0f, 0f, scale * offset.x),
-                                            new Vector4(0f, scale, 0f, scale * offset.y),
-                                            new Vector4(0f, 0f, 1f, 0f),
-                                            new Vector4(0f, 0f, 0f, 1f));
-            
-            m = matrix2 * matrix1 * m;
+            float scale = 1f / split;
+            m.m00 = (0.5f * (m.m00 + m.m30) + offset.x * m.m30) * scale;
+            m.m01 = (0.5f * (m.m01 + m.m31) + offset.x * m.m31) * scale;
+            m.m02 = (0.5f * (m.m02 + m.m32) + offset.x * m.m32) * scale;
+            m.m03 = (0.5f * (m.m03 + m.m33) + offset.x * m.m33) * scale;
+            m.m10 = (0.5f * (m.m10 + m.m30) + offset.y * m.m30) * scale;
+            m.m11 = (0.5f * (m.m11 + m.m31) + offset.y * m.m31) * scale;
+            m.m12 = (0.5f * (m.m12 + m.m32) + offset.y * m.m32) * scale;
+            m.m13 = (0.5f * (m.m13 + m.m33) + offset.y * m.m33) * scale;
+            m.m20 = 0.5f * (m.m20 + m.m30);
+            m.m21 = 0.5f * (m.m21 + m.m31);
+            m.m22 = 0.5f * (m.m22 + m.m32);
+            m.m23 = 0.5f * (m.m23 + m.m33);
             return m;
         }
 
