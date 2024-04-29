@@ -103,19 +103,44 @@ namespace CustomRP.Runtime
                 out ShadowSplitData splitData);
             
             shadowDrawingSettings.splitData = splitData;
-            SetTileViewport(index, split, tileSize);
-            _dirShadowMatrices[index] = projectionMatrix * viewMatrix;
+            Vector2 offset = SetTileViewport(index, split, tileSize);
+            _dirShadowMatrices[index] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
             _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
             ExecuteBuffer();
             _context.DrawShadows(ref shadowDrawingSettings);
         }
 
-        private void SetTileViewport(int index, int split, int tileSize)
+        private Vector2 SetTileViewport(int index, int split, int tileSize)
         {
-            int x = index % split;
-            int y = index / split;
-            _buffer.SetViewport(new Rect(x * tileSize, y * tileSize, tileSize, tileSize));
+            Vector2 offset = new Vector2(index % split, index / split);
+            _buffer.SetViewport(new Rect(offset.x * tileSize, offset.y * tileSize, tileSize, tileSize));
+            return offset;
+        }
+
+        private Matrix4x4 ConvertToAtlasMatrix(Matrix4x4 m, Vector2 offset, int split)
+        {
+            if (SystemInfo.usesReversedZBuffer)
+            {
+                m.m20 = -m.m20;
+                m.m21 = -m.m21;
+                m.m22 = -m.m22;
+                m.m23 = -m.m23;
+            }
+
+            Matrix4x4 matrix1 = new Matrix4x4(new Vector4(0.5f, 0.0f, 0.0f, 0.5f),
+                                             new Vector4(0.0f, 0.5f, 0.0f, 0.5f),
+                                             new Vector4(0.0f, 0.0f, 0.5f, 0.5f),
+                                             new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+            float scale = 1.0f / split;
+            Matrix4x4 matrix2 = new Matrix4x4(new Vector4(scale, 0f, 0f, scale * offset.x),
+                                            new Vector4(0f, scale, 0f, scale * offset.y),
+                                            new Vector4(0f, 0f, 1f, 0f),
+                                            new Vector4(0f, 0f, 0f, 1f));
+            
+            m = matrix2 * matrix1 * m;
+            return m;
         }
 
         public void Cleanup()
