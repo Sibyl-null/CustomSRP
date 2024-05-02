@@ -11,8 +11,32 @@ TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
 SAMPLER_CMP(SHADOW_SAMPLER);
 
 CBUFFER_START(_CustomShadows)
+    int _CascadeCount;
+    float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
     float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
 CBUFFER_END
+
+struct ShadowData
+{
+    int cascadeIndex;   // 阴影级联索引
+};
+
+ShadowData GetShadowData(Surface surfaceWS)
+{
+    ShadowData data;
+
+    int index = 0;
+    for (index = 0; index < _CascadeCount; ++index)
+    {
+        float4 sphere = _CascadeCullingSpheres[index];
+        float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
+        if (distanceSqr < sphere.w)
+            break;
+    }
+    data.cascadeIndex = index;
+
+    return data;
+}
 
 struct DirectionalShadowData
 {

@@ -22,4 +22,9 @@ float Square(float x)
     return x * x;
 }
 
+float DistanceSquared(float3 a, float3 b)
+{
+    return dot(a - b, a - b);
+}
+
 #endif // CUSTOM_COMMON_INCLUDED
