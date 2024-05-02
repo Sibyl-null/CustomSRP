@@ -19,11 +19,13 @@ CBUFFER_END
 struct ShadowData
 {
     int cascadeIndex;   // 阴影级联索引
+    float strength;
 };
 
 ShadowData GetShadowData(Surface surfaceWS)
 {
     ShadowData data;
+    data.strength = 1.0;
 
     int index = 0;
     for (index = 0; index < _CascadeCount; ++index)
@@ -33,8 +35,11 @@ ShadowData GetShadowData(Surface surfaceWS)
         if (distanceSqr < sphere.w)
             break;
     }
-    data.cascadeIndex = index;
 
+    if (index == _CascadeCount)
+        data.strength = 0.0;
+    
+    data.cascadeIndex = index;
     return data;
 }
 
