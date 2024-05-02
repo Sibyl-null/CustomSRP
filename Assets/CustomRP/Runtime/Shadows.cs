@@ -12,6 +12,7 @@ namespace CustomRP.Runtime
         
         private const string BufferName = "Shadows";
         private const int MaxShadowedDirectionalLightCount = 4;
+        private const int MaxCascadeCount = 4;
         private static readonly int DirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
         private static readonly int DirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices");
         
@@ -23,7 +24,7 @@ namespace CustomRP.Runtime
         
         private int _shadowedDirectionalLightCount;
         private readonly ShadowedDirectionalLight[] _shadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
-        private readonly Matrix4x4[] _dirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount];
+        private readonly Matrix4x4[] _dirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
 
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
         {
@@ -54,8 +55,9 @@ namespace CustomRP.Runtime
             {
                 visibleLightIndex = visibleLightIndex
             };
-            
-            return new Vector2(light.shadowStrength, _shadowedDirectionalLightCount++);
+
+            return new Vector2(light.shadowStrength,
+                _shadowSettings.directional.cascadesCount * _shadowedDirectionalLightCount++);
         }
         
         public void Render()
@@ -84,7 +86,8 @@ namespace CustomRP.Runtime
             _buffer.BeginSample(BufferName);
             ExecuteBuffer();
             {
-                int split = _shadowedDirectionalLightCount <= 1 ? 1 : 2;
+                int tiles = _shadowedDirectionalLightCount * _shadowSettings.directional.cascadesCount;
+                int split = tiles <= 1 ? 1 : (tiles <= 4 ? 2 : 4);
                 int tileSize = atlasSize / split;
                 
                 for (int i = 0; i < _shadowedDirectionalLightCount; i++)
@@ -102,18 +105,28 @@ namespace CustomRP.Runtime
             var shadowDrawingSettings = new ShadowDrawingSettings(_cullingResults, light.visibleLightIndex,
                 BatchCullingProjectionType.Orthographic);
 
-            _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.visibleLightIndex, 0, 1,
-                Vector3.zero, tileSize, 0f,
-                out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
-                out ShadowSplitData splitData);
+            int cascadeCount = _shadowSettings.directional.cascadesCount;
+            int tileOffset = index * cascadeCount;
+            Vector3 ratios = _shadowSettings.directional.CascadeRatios;
+
+            for (int i = 0; i < cascadeCount; ++i)
+            {
+                _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.visibleLightIndex, 
+                    i, cascadeCount, ratios, 
+                    tileSize, 0f,
+                    out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
+                    out ShadowSplitData splitData);
             
-            shadowDrawingSettings.splitData = splitData;
-            Vector2 offset = SetTileViewport(index, split, tileSize);
-            _dirShadowMatrices[index] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
-            _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
+                shadowDrawingSettings.splitData = splitData;
+                
+                int tileIndex = tileOffset + i;
+                Vector2 offset = SetTileViewport(tileIndex, split, tileSize);
+                _dirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
+                _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
-            ExecuteBuffer();
-            _context.DrawShadows(ref shadowDrawingSettings);
+                ExecuteBuffer();
+                _context.DrawShadows(ref shadowDrawingSettings);
+            }
         }
 
         private Vector2 SetTileViewport(int index, int split, int tileSize)
