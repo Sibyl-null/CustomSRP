@@ -13,8 +13,15 @@ namespace CustomRP.Runtime
         private const string BufferName = "Shadows";
         private const int MaxShadowedDirectionalLightCount = 4;
         private const int MaxCascadeCount = 4;
+        
         private static readonly int DirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
         private static readonly int DirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices");
+        private static readonly int CascadeCountId = Shader.PropertyToID("_CascadeCount");
+        private static readonly int CascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres");
+        
+        private static readonly ShadowedDirectionalLight[] ShadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
+        private static readonly Matrix4x4[] DirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
+        private static readonly Vector4[] CascadeCullingSpheres = new Vector4[MaxCascadeCount];
         
         private ScriptableRenderContext _context;
         private CullingResults _cullingResults;
@@ -23,8 +30,6 @@ namespace CustomRP.Runtime
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         
         private int _shadowedDirectionalLightCount;
-        private readonly ShadowedDirectionalLight[] _shadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
-        private readonly Matrix4x4[] _dirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
 
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
         {
@@ -51,7 +56,7 @@ namespace CustomRP.Runtime
             if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
                 return Vector2.zero;
             
-            _shadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
+            ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
                 visibleLightIndex = visibleLightIndex
             };
@@ -93,7 +98,9 @@ namespace CustomRP.Runtime
                 for (int i = 0; i < _shadowedDirectionalLightCount; i++)
                     RenderDirectionalShadowInAtlas(i, split, tileSize);
                 
-                _buffer.SetGlobalMatrixArray(DirShadowMatricesId, _dirShadowMatrices);
+                _buffer.SetGlobalInt(CascadeCountId, _shadowSettings.directional.cascadesCount);
+                _buffer.SetGlobalVectorArray(CascadeCullingSpheresId, CascadeCullingSpheres);
+                _buffer.SetGlobalMatrixArray(DirShadowMatricesId, DirShadowMatrices);
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
@@ -101,7 +108,7 @@ namespace CustomRP.Runtime
 
         private void RenderDirectionalShadowInAtlas(int index, int split, int tileSize)
         {
-            ShadowedDirectionalLight light = _shadowedDirectionalLights[index];
+            ShadowedDirectionalLight light = ShadowedDirectionalLights[index];
             var shadowDrawingSettings = new ShadowDrawingSettings(_cullingResults, light.visibleLightIndex,
                 BatchCullingProjectionType.Orthographic);
 
@@ -118,10 +125,19 @@ namespace CustomRP.Runtime
                     out ShadowSplitData splitData);
             
                 shadowDrawingSettings.splitData = splitData;
+                if (index == 0)
+                {
+                    // 只需要对第一束光这样做，因为所有光的级联都是等效的
+                    // cullingSphere.xyz 表示球体的坐标，w 表示球体的半径
+                    // 这里直接传递半径的平方，就不用在 Shader 中计算了
+                    Vector4 cullingSphere = splitData.cullingSphere;
+                    cullingSphere.w *= cullingSphere.w;
+                    CascadeCullingSpheres[i] = cullingSphere;
+                }
                 
                 int tileIndex = tileOffset + i;
                 Vector2 offset = SetTileViewport(tileIndex, split, tileSize);
-                _dirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
+                DirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
                 _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
                 ExecuteBuffer();
