@@ -30,8 +30,12 @@ namespace CustomRP.Runtime
             public Vector3 CascadeRatios => new Vector3(cascadeRatios1, cascadeRatios2, cascadeRatios3);
         }
         
-        [Min(0f)]
+        [Min(0.001f)]
         public float maxDistance = 100f;
+        
+        [Range(0.001f, 1f)]
+        public float distanceFade = 0.1f;
+        
         public Directional directional = new()
         {
             atlasSize = TextureSize._1024,
