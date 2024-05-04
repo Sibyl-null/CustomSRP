@@ -147,8 +147,10 @@ namespace CustomRP.Runtime
                 DirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
                 _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
+                // _buffer.SetGlobalDepthBias(0f, 3f);
                 ExecuteBuffer();
                 _context.DrawShadows(ref shadowDrawingSettings);
+                // _buffer.SetGlobalDepthBias(0f, 0f);
             }
         }
 
