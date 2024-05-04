@@ -26,6 +26,7 @@ namespace CustomRP.Runtime
             [Range(0f, 1f)] public float cascadeRatios1;
             [Range(0f, 1f)] public float cascadeRatios2;
             [Range(0f, 1f)] public float cascadeRatios3;
+            [Range(0.001f, 1f)] public float cascadeFade;
             
             public Vector3 CascadeRatios => new Vector3(cascadeRatios1, cascadeRatios2, cascadeRatios3);
         }
@@ -42,7 +43,8 @@ namespace CustomRP.Runtime
             cascadesCount = 4,
             cascadeRatios1 = 0.1f,
             cascadeRatios2 = 0.25f,
-            cascadeRatios3 = 0.5f
+            cascadeRatios3 = 0.5f,
+            cascadeFade = 0.1f
         };
     }
 }

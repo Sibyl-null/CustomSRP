@@ -102,8 +102,12 @@ namespace CustomRP.Runtime
                 _buffer.SetGlobalInt(CascadeCountId, _shadowSettings.directional.cascadesCount);
                 _buffer.SetGlobalVectorArray(CascadeCullingSpheresId, CascadeCullingSpheres);
                 _buffer.SetGlobalMatrixArray(DirShadowMatricesId, DirShadowMatrices);
-                _buffer.SetGlobalVector(ShadowDistanceFadeId,
-                    new Vector4(1f / _shadowSettings.maxDistance, 1f / _shadowSettings.distanceFade));
+
+                float f = 1f - _shadowSettings.directional.cascadeFade;
+                _buffer.SetGlobalVector(ShadowDistanceFadeId, new Vector4(
+                    1f / _shadowSettings.maxDistance,
+                    1f / _shadowSettings.distanceFade,
+                    1f / (1 - f * f)));
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
