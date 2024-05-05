@@ -18,11 +18,13 @@ namespace CustomRP.Runtime
         private static readonly int DirShadowMatricesId = Shader.PropertyToID("_DirectionalShadowMatrices");
         private static readonly int CascadeCountId = Shader.PropertyToID("_CascadeCount");
         private static readonly int CascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres");
+        private static readonly int CascadeDataId = Shader.PropertyToID("_CascadeData");
         private static readonly int ShadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
         
         private static readonly ShadowedDirectionalLight[] ShadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
         private static readonly Matrix4x4[] DirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
         private static readonly Vector4[] CascadeCullingSpheres = new Vector4[MaxCascadeCount];
+        private static readonly Vector4[] CascadeData = new Vector4[MaxCascadeCount];
         
         private ScriptableRenderContext _context;
         private CullingResults _cullingResults;
@@ -101,6 +103,7 @@ namespace CustomRP.Runtime
                 
                 _buffer.SetGlobalInt(CascadeCountId, _shadowSettings.directional.cascadesCount);
                 _buffer.SetGlobalVectorArray(CascadeCullingSpheresId, CascadeCullingSpheres);
+                _buffer.SetGlobalVectorArray(CascadeDataId, CascadeData);
                 _buffer.SetGlobalMatrixArray(DirShadowMatricesId, DirShadowMatrices);
 
                 float f = 1f - _shadowSettings.directional.cascadeFade;
@@ -136,10 +139,7 @@ namespace CustomRP.Runtime
                 {
                     // 只需要对第一束光这样做，因为所有光的级联都是等效的
                     // cullingSphere.xyz 表示球体的坐标，w 表示球体的半径
-                    // 这里直接传递半径的平方，就不用在 Shader 中计算了
-                    Vector4 cullingSphere = splitData.cullingSphere;
-                    cullingSphere.w *= cullingSphere.w;
-                    CascadeCullingSpheres[i] = cullingSphere;
+                    SetCascadeData(i, splitData.cullingSphere, tileSize);
                 }
                 
                 int tileIndex = tileOffset + i;
@@ -152,6 +152,13 @@ namespace CustomRP.Runtime
                 _context.DrawShadows(ref shadowDrawingSettings);
                 // _buffer.SetGlobalDepthBias(0f, 0f);
             }
+        }
+
+        private void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
+        {
+            cullingSphere.w *= cullingSphere.w;
+            CascadeData[index].x = 1f / cullingSphere.w;
+            CascadeCullingSpheres[index] = cullingSphere;
         }
 
         private Vector2 SetTileViewport(int index, int split, int tileSize)
