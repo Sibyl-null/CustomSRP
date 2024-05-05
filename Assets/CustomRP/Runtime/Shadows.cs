@@ -8,6 +8,7 @@ namespace CustomRP.Runtime
         private struct ShadowedDirectionalLight
         {
             public int visibleLightIndex;
+            public float slopeScaleBias;
         }
         
         private const string BufferName = "Shadows";
@@ -61,7 +62,8 @@ namespace CustomRP.Runtime
             
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
-                visibleLightIndex = visibleLightIndex
+                visibleLightIndex = visibleLightIndex,
+                slopeScaleBias = light.shadowBias
             };
 
             return new Vector2(light.shadowStrength,
