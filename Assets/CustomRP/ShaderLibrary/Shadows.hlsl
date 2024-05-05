@@ -68,16 +68,18 @@ float SampleDirectionalShadowAtlas(float3 positionSTS)  // positionSTS: shadow t
 }
 
 /** 返回因阴影造成的光照衰减系数 */
-float GetDirectionalShadowAttenuation(DirectionalShadowData data, Surface surfaceWS)
+float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
 {
-    if (data.strength <= 0.0)
+    if (directional.strength <= 0.0)
         return 1.0;
-    
-    float3 positionSTS = mul(_DirectionalShadowMatrices[data.tileIndex], float4(surfaceWS.position, 1)).xyz;
+
+    float3 normalBias = surfaceWS.normal * _CascadeData[global.cascadeIndex].y;
+    float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex],
+        float4(surfaceWS.position + normalBias, 1)).xyz;
     float shadow = SampleDirectionalShadowAtlas(positionSTS);
 
     // 出于艺术考量或表示半透明表面的阴影，灯光的阴影强度可以被降低
-    return lerp(1.0, shadow, data.strength);
+    return lerp(1.0, shadow, directional.strength);
 }
 
 #endif // CUSTOM_SHADOWS_INCLUDED
