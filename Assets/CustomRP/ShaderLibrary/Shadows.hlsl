@@ -13,6 +13,8 @@ SAMPLER_CMP(SHADOW_SAMPLER);
 CBUFFER_START(_CustomShadows)
     int _CascadeCount;
     float4 _CascadeCullingSpheres[MAX_CASCADE_COUNT];
+
+    // x: 1 / cullingSphere.w^2, y: 阴影采样膨胀系数
     float4 _CascadeData[MAX_CASCADE_COUNT];
     float4x4 _DirectionalShadowMatrices[MAX_SHADOWED_DIRECTIONAL_LIGHT_COUNT * MAX_CASCADE_COUNT];
     float4 _ShadowDistanceFade;
@@ -58,8 +60,9 @@ ShadowData GetShadowData(Surface surfaceWS)
 
 struct DirectionalShadowData
 {
-    float strength;     // 阴影强度
-    int tileIndex;      // 图集索引
+    float strength;          // 阴影强度
+    int tileIndex;           // 图集索引
+    float normalBias;        // 法线偏移量
 };
 
 float SampleDirectionalShadowAtlas(float3 positionSTS)  // positionSTS: shadow texture space position
@@ -73,7 +76,7 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
     if (directional.strength <= 0.0)
         return 1.0;
 
-    float3 normalBias = surfaceWS.normal * _CascadeData[global.cascadeIndex].y;
+    float3 normalBias = surfaceWS.normal * directional.normalBias * _CascadeData[global.cascadeIndex].y;
     float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex],
         float4(surfaceWS.position + normalBias, 1)).xyz;
     float shadow = SampleDirectionalShadowAtlas(positionSTS);

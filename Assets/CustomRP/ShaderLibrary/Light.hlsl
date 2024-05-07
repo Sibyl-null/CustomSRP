@@ -8,7 +8,7 @@ CBUFFER_START(_CustomLight)
     float4 _DirectionalLightColors[MAX_DIRECTIONAL_LIGHT_COUNT];
     float4 _DirectionalLightDirections[MAX_DIRECTIONAL_LIGHT_COUNT];\
 
-    // x 表示光源的阴影强度，y 表示在阴影图集中的索引
+    // x 表示光源的阴影强度, y 表示在阴影图集中的索引, z 表示阴影的法线偏移
     float4 _DirectionalLightShadowData[MAX_DIRECTIONAL_LIGHT_COUNT];
 CBUFFER_END
 
@@ -29,6 +29,7 @@ DirectionalShadowData GetDirectionalShadowData(int index, ShadowData shadowData)
     DirectionalShadowData data;
     data.strength = _DirectionalLightShadowData[index].x * shadowData.strength;
     data.tileIndex = _DirectionalLightShadowData[index].y + shadowData.cascadeIndex;
+    data.normalBias = _DirectionalLightShadowData[index].z;
     return data;
 }
 

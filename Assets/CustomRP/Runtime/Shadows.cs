@@ -46,19 +46,19 @@ namespace CustomRP.Runtime
 
         /**
          * 尝试为指定方向光在阴影图集中保留空间，并存储渲染它们所需的信息
-         * 返回 Vector2, x 表示光源的阴影强度，y 表示在阴影图集中的索引
+         * 返回 Vector3, x 表示光源的阴影强度，y 表示在阴影图集中的索引, z 表示阴影的法线偏移
          */
-        public Vector2 ReserveDirectionalShadow(Light light, int visibleLightIndex)
+        public Vector3 ReserveDirectionalShadow(Light light, int visibleLightIndex)
         {
             if (_shadowedDirectionalLightCount >= MaxShadowedDirectionalLightCount)
-                return Vector2.zero;
+                return Vector3.zero;
 
             if (light.shadows == LightShadows.None || light.shadowStrength <= 0f)
-                return Vector2.zero;
+                return Vector3.zero;
             
             // 如果光源影响了至少一个阴影投射对象，则返回 true
             if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
-                return Vector2.zero;
+                return Vector3.zero;
             
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
@@ -66,8 +66,9 @@ namespace CustomRP.Runtime
                 slopeScaleBias = light.shadowBias
             };
 
-            return new Vector2(light.shadowStrength,
-                _shadowSettings.directional.cascadesCount * _shadowedDirectionalLightCount++);
+            return new Vector3(light.shadowStrength,
+                _shadowSettings.directional.cascadesCount * _shadowedDirectionalLightCount++,
+                light.shadowNormalBias);
         }
         
         public void Render()
@@ -149,10 +150,10 @@ namespace CustomRP.Runtime
                 DirShadowMatrices[tileIndex] = ConvertToAtlasMatrix(projectionMatrix * viewMatrix, offset, split);
                 _buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
             
-                // _buffer.SetGlobalDepthBias(0f, 3f);
+                _buffer.SetGlobalDepthBias(0f, light.slopeScaleBias);
                 ExecuteBuffer();
                 _context.DrawShadows(ref shadowDrawingSettings);
-                // _buffer.SetGlobalDepthBias(0f, 0f);
+                _buffer.SetGlobalDepthBias(0f, 0f);
             }
         }
 
