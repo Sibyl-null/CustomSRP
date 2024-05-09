@@ -9,6 +9,7 @@ namespace CustomRP.Runtime
         {
             public int visibleLightIndex;
             public float slopeScaleBias;
+            public float nearPlaneOffset;
         }
         
         private const string BufferName = "Shadows";
@@ -63,7 +64,8 @@ namespace CustomRP.Runtime
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
                 visibleLightIndex = visibleLightIndex,
-                slopeScaleBias = light.shadowBias
+                slopeScaleBias = light.shadowBias,
+                nearPlaneOffset = light.shadowNearPlane
             };
 
             return new Vector3(light.shadowStrength,
@@ -131,9 +133,9 @@ namespace CustomRP.Runtime
 
             for (int i = 0; i < cascadeCount; ++i)
             {
-                _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.visibleLightIndex, 
-                    i, cascadeCount, ratios, 
-                    tileSize, 0f,
+                _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.visibleLightIndex,
+                    i, cascadeCount, ratios,
+                    tileSize, light.nearPlaneOffset,
                     out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
                     out ShadowSplitData splitData);
             
