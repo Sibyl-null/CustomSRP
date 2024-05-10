@@ -14,12 +14,23 @@ namespace CustomRP.Runtime
             _4096 = 4096,
             _8192 = 8192
         }
+
+        public enum FilterMode
+        {
+            PCF2x2,
+            PCF3x3,
+            PCF5x5,
+            PCF7x7,
+        }
         
         [System.Serializable]
         public struct Directional   // used for directional light shadows
         {
             // 使用单个纹理来包含多个阴影贴图
             public TextureSize atlasSize;
+
+            // 阴影过滤模式，决定阴影的软硬程度
+            public FilterMode filter;
             
             // 阴影级联设置
             [Range(1, 4)] public int cascadesCount;
@@ -40,6 +51,7 @@ namespace CustomRP.Runtime
         public Directional directional = new()
         {
             atlasSize = TextureSize._1024,
+            filter = FilterMode.PCF2x2,
             cascadesCount = 4,
             cascadeRatios1 = 0.1f,
             cascadeRatios2 = 0.25f,

@@ -21,7 +21,15 @@ namespace CustomRP.Runtime
         private static readonly int CascadeCountId = Shader.PropertyToID("_CascadeCount");
         private static readonly int CascadeCullingSpheresId = Shader.PropertyToID("_CascadeCullingSpheres");
         private static readonly int CascadeDataId = Shader.PropertyToID("_CascadeData");
+        private static readonly int ShadowAtlasSizeId = Shader.PropertyToID("_ShadowAtlasSize");
         private static readonly int ShadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
+
+        private static readonly string[] DirectionalFilterKeywords =
+        {
+            "_DIRECTIONAL_PCF3",
+            "_DIRECTIONAL_PCF5",
+            "_DIRECTIONAL_PCF7"
+        };
         
         private static readonly ShadowedDirectionalLight[] ShadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
         private static readonly Matrix4x4[] DirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
@@ -116,6 +124,10 @@ namespace CustomRP.Runtime
                     1f / _shadowSettings.maxDistance,
                     1f / _shadowSettings.distanceFade,
                     1f / (1 - f * f)));
+
+                _buffer.SetGlobalVector(ShadowAtlasSizeId, new Vector4(atlasSize, 1f / atlasSize));
+                
+                SetKeywords();
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
@@ -162,9 +174,12 @@ namespace CustomRP.Runtime
         private void SetCascadeData(int index, Vector4 cullingSphere, float tileSize)
         {
             float texelSize = 2f * cullingSphere.w / tileSize;
+            float filterSize = texelSize * ((float)_shadowSettings.directional.filter + 1f);
+
+            cullingSphere.w -= filterSize;
             cullingSphere.w *= cullingSphere.w;
 
-            CascadeData[index] = new Vector4(1f / cullingSphere.w, texelSize * 1.4142136f);
+            CascadeData[index] = new Vector4(1f / cullingSphere.w, filterSize * 1.4142136f);
             CascadeCullingSpheres[index] = cullingSphere;
         }
 
@@ -199,6 +214,18 @@ namespace CustomRP.Runtime
             m.m22 = 0.5f * (m.m22 + m.m32);
             m.m23 = 0.5f * (m.m23 + m.m33);
             return m;
+        }
+
+        private void SetKeywords()
+        {
+            int enabledIndex = (int)_shadowSettings.directional.filter - 1;
+            for (int i = 0; i < DirectionalFilterKeywords.Length; ++i)
+            {
+                if (i == enabledIndex)
+                    _buffer.EnableShaderKeyword(DirectionalFilterKeywords[i]);
+                else
+                    _buffer.DisableShaderKeyword(DirectionalFilterKeywords[i]);
+            }
         }
 
         public void Cleanup()
