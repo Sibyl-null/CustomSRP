@@ -22,6 +22,11 @@ namespace CustomRP.Runtime
             PCF5x5,
             PCF7x7,
         }
+
+        public enum CascadeBlendMode
+        {
+            Hard, Soft, Dither
+        }
         
         [System.Serializable]
         public struct Directional   // used for directional light shadows
@@ -38,6 +43,7 @@ namespace CustomRP.Runtime
             [Range(0f, 1f)] public float cascadeRatios2;
             [Range(0f, 1f)] public float cascadeRatios3;
             [Range(0.001f, 1f)] public float cascadeFade;
+            public CascadeBlendMode cascadeBlend;
             
             public Vector3 CascadeRatios => new Vector3(cascadeRatios1, cascadeRatios2, cascadeRatios3);
         }
@@ -56,7 +62,8 @@ namespace CustomRP.Runtime
             cascadeRatios1 = 0.1f,
             cascadeRatios2 = 0.25f,
             cascadeRatios3 = 0.5f,
-            cascadeFade = 0.1f
+            cascadeFade = 0.1f,
+            cascadeBlend = CascadeBlendMode.Hard
         };
     }
 }

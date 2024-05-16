@@ -30,6 +30,12 @@ namespace CustomRP.Runtime
             "_DIRECTIONAL_PCF5",
             "_DIRECTIONAL_PCF7"
         };
+
+        private static readonly string[] CascadeBlendKeywords =
+        {
+            "_CASCADE_BLEND_SOFT",
+            "_CASCADE_BLEND_DITHER"
+        };
         
         private static readonly ShadowedDirectionalLight[] ShadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
         private static readonly Matrix4x4[] DirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
@@ -126,8 +132,9 @@ namespace CustomRP.Runtime
                     1f / (1 - f * f)));
 
                 _buffer.SetGlobalVector(ShadowAtlasSizeId, new Vector4(atlasSize, 1f / atlasSize));
-                
-                SetKeywords();
+
+                SetKeywords(DirectionalFilterKeywords, (int)_shadowSettings.directional.filter - 1);
+                SetKeywords(CascadeBlendKeywords, (int)_shadowSettings.directional.cascadeBlend - 1);
             }
             _buffer.EndSample(BufferName);
             ExecuteBuffer();
@@ -216,15 +223,14 @@ namespace CustomRP.Runtime
             return m;
         }
 
-        private void SetKeywords()
+        private void SetKeywords(string[] keywords, int enabledIndex)
         {
-            int enabledIndex = (int)_shadowSettings.directional.filter - 1;
-            for (int i = 0; i < DirectionalFilterKeywords.Length; ++i)
+            for (int i = 0; i < keywords.Length; ++i)
             {
                 if (i == enabledIndex)
-                    _buffer.EnableShaderKeyword(DirectionalFilterKeywords[i]);
+                    _buffer.EnableShaderKeyword(keywords[i]);
                 else
-                    _buffer.DisableShaderKeyword(DirectionalFilterKeywords[i]);
+                    _buffer.DisableShaderKeyword(keywords[i]);
             }
         }
 

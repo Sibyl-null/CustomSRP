@@ -70,8 +70,23 @@ ShadowData GetShadowData(Surface surfaceWS)
         }
     }
 
+    // 超过最大级联数量，则不渲染阴影
     if (index == _CascadeCount)
+    {
         data.strength = 0.0;
+    }
+    // 在当前级联和下一个级联之间进行抖动
+#ifdef _CASCADE_BLEND_DITHER
+    else if (data.cascadeBlend < surfaceWS.dither)
+    {
+        index += 1;
+    }
+#endif
+
+    // 如果没有定义软级联混合，则将混合值设为 1，即不进行混合
+#ifndef _CASCADE_BLEND_SOFT
+    data.cascadeBlend = 1.0;
+#endif
     
     data.cascadeIndex = index;
     return data;
