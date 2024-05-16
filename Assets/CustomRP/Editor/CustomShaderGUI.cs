@@ -8,6 +8,11 @@ namespace CustomRP.Editor
 {
     public class CustomShaderGUI : ShaderGUI
     {
+        private enum ShadowMode
+        {
+            On, Clip, Dither, Off
+        }
+        
         private MaterialEditor _editor;
         private List<Material> _materials;
         private MaterialProperty[] _properties;
@@ -44,6 +49,18 @@ namespace CustomRP.Editor
         private RenderQueue RenderQueue
         {
             set => _materials.ForEach(m => m.renderQueue = (int)value);
+        }
+
+        private ShadowMode Shadows
+        {
+            set
+            {
+                if (SetProperty("_Shadows", (float)value))
+                {
+                    SetKeyword("_SHADOWS_CLIP", value == ShadowMode.Clip);
+                    SetKeyword("_SHADOWS_DITHER", value == ShadowMode.Dither);
+                }
+            }
         }
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
