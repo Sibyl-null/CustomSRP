@@ -56,7 +56,7 @@ void ShadowCasterPassFragment(Varyings input)
     float4 baseColor = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
     float4 base = baseMap * baseColor;
     
-    #ifdef _CLIPPING
+    #ifdef _SHADOWS_CLIP
         float cutoff = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
         clip(base.a - cutoff);
     #endif
