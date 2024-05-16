@@ -35,6 +35,7 @@ CBUFFER_END
 struct ShadowData
 {
     int cascadeIndex;   // 阴影级联索引
+    float cascadeBlend;
     float strength;
 };
 
@@ -46,6 +47,7 @@ float FadeShadowStrength(float distance, float scale, float fade)
 ShadowData GetShadowData(Surface surfaceWS)
 {
     ShadowData data;
+    data.cascadeBlend = 1.0;
     data.strength = FadeShadowStrength(surfaceWS.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y);
 
     int index = 0;
@@ -55,9 +57,14 @@ ShadowData GetShadowData(Surface surfaceWS)
         float distanceSqr = DistanceSquared(surfaceWS.position, sphere.xyz);
         if (distanceSqr < sphere.w)
         {
+            float fade = FadeShadowStrength(distanceSqr, _CascadeData[index].x, _ShadowDistanceFade.z);
             if (index == _CascadeCount - 1)
             {
-                data.strength *= FadeShadowStrength(distanceSqr, _CascadeData[index].x, _ShadowDistanceFade.z);
+                data.strength *= fade;
+            }
+            else
+            {
+                data.cascadeBlend = fade;    
             }
             break;
         }
@@ -108,9 +115,16 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
         return 1.0;
 
     float3 normalBias = surfaceWS.normal * directional.normalBias * _CascadeData[global.cascadeIndex].y;
-    float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex],
-        float4(surfaceWS.position + normalBias, 1)).xyz;
+    float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex], float4(surfaceWS.position + normalBias, 1)).xyz;
     float shadow = FilterDirectionalShadow(positionSTS);
+
+    if (global.cascadeBlend < 1.0)
+    {
+        // 对下一个级联采样，并根据当前级联的混合权重进行插值
+        normalBias = surfaceWS.normal * directional.normalBias * _CascadeData[global.cascadeIndex + 1].y;
+        positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex + 1], float4(surfaceWS.position + normalBias, 1)).xyz;
+        shadow = lerp(FilterDirectionalShadow(positionSTS), shadow, global.cascadeBlend);
+    }
 
     // 出于艺术考量或表示半透明表面的阴影，灯光的阴影强度可以被降低
     return lerp(1.0, shadow, directional.strength);
