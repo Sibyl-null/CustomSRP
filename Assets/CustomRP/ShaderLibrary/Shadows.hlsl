@@ -126,6 +126,10 @@ float FilterDirectionalShadow(float3 positionSTS)
 /** 返回因阴影造成的光照衰减系数 */
 float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
 {
+#ifndef _RECEIVE_SHADOWS
+    return 1.0;
+#endif
+    
     if (directional.strength <= 0.0)
         return 1.0;
 
