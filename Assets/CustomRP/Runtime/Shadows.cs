@@ -150,6 +150,8 @@ namespace CustomRP.Runtime
             int tileOffset = index * cascadeCount;
             Vector3 ratios = _shadowSettings.directional.CascadeRatios;
 
+            float cullingFactor = Mathf.Max(0f, 0.8f - _shadowSettings.directional.cascadeFade);
+            
             for (int i = 0; i < cascadeCount; ++i)
             {
                 _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(light.visibleLightIndex,
@@ -157,7 +159,8 @@ namespace CustomRP.Runtime
                     tileSize, light.nearPlaneOffset,
                     out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix,
                     out ShadowSplitData splitData);
-            
+
+                splitData.shadowCascadeBlendCullingFactor = cullingFactor;
                 shadowDrawingSettings.splitData = splitData;
                 if (index == 0)
                 {
