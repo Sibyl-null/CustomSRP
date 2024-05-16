@@ -65,6 +65,8 @@ namespace CustomRP.Editor
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
+            EditorGUI.BeginChangeCheck();
+            
             base.OnGUI(materialEditor, properties);
             _editor = materialEditor;
             _materials = materialEditor.targets.Cast<Material>().ToList();
@@ -78,6 +80,11 @@ namespace CustomRP.Editor
                 ClipPreset();
                 FadePreset();
                 TransparentPreset();
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetShadowCasterPass();
             }
         }
 
@@ -114,6 +121,21 @@ namespace CustomRP.Editor
         private bool HasProperty(string name)
         {
             return FindProperty(name, _properties, false) != null;
+        }
+
+        private void SetShadowCasterPass()
+        {
+            MaterialProperty shadows = FindProperty("_Shadows", _properties, false);
+            // hasMixedValue 表示同时选中的多个材质的属性值不一致
+            if (shadows == null || shadows.hasMixedValue)
+                return;
+
+            bool enabled = shadows.floatValue < (float)ShadowMode.Off;
+            foreach (Material material in _materials)
+            {
+                // 在材质级别上启用或禁用着色器通道
+                material.SetShaderPassEnabled("ShadowCaster", enabled);
+            }
         }
 
 
