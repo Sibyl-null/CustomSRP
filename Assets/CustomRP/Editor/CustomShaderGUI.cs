@@ -160,6 +160,7 @@ namespace CustomRP.Editor
             if (PresetButton("Opaque"))
             {
                 Clipping = false;
+                Shadows = ShadowMode.On;
                 PremultiplyAlpha = false;
                 SrcBlend = BlendMode.One;
                 DstBlend = BlendMode.Zero;
@@ -174,6 +175,7 @@ namespace CustomRP.Editor
             if (PresetButton("Clip"))
             {
                 Clipping = true;
+                Shadows = ShadowMode.Clip;
                 PremultiplyAlpha = false;
                 SrcBlend = BlendMode.One;
                 DstBlend = BlendMode.Zero;
@@ -188,6 +190,7 @@ namespace CustomRP.Editor
             if (PresetButton("Fade"))
             {
                 Clipping = false;
+                Shadows = ShadowMode.Dither;
                 PremultiplyAlpha = false;
                 SrcBlend = BlendMode.SrcAlpha;
                 DstBlend = BlendMode.OneMinusSrcAlpha;
@@ -202,6 +205,7 @@ namespace CustomRP.Editor
             if (HasPremultiplyAlpha && PresetButton("Transparent"))
             {
                 Clipping = false;
+                Shadows = ShadowMode.Dither;
                 PremultiplyAlpha = true;
                 SrcBlend = BlendMode.One;
                 DstBlend = BlendMode.OneMinusSrcAlpha;
