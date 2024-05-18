@@ -107,7 +107,8 @@ namespace CustomRP.Runtime
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
             {
                 enableDynamicBatching = _useDynamicBatching,
-                enableInstancing = _useGPUInstancing
+                enableInstancing = _useGPUInstancing,
+                perObjectData = PerObjectData.Lightmaps
             };
             drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
@@ -124,7 +125,8 @@ namespace CustomRP.Runtime
             DrawingSettings drawingSettings = new DrawingSettings(UnlitShaderTagId, sortingSettings)
             {
                 enableDynamicBatching = _useDynamicBatching,
-                enableInstancing = _useGPUInstancing
+                enableInstancing = _useGPUInstancing,
+                perObjectData = PerObjectData.Lightmaps
             };
             drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
