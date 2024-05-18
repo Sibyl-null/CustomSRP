@@ -6,6 +6,7 @@
 #include "../ShaderLibrary/Shadows.hlsl"
 #include "../ShaderLibrary/Light.hlsl"
 #include "../ShaderLibrary/BRDF.hlsl"
+#include "../ShaderLibrary/GI.hlsl"
 #include "../ShaderLibrary/Lighting.hlsl"
 
 // 着色器资源，不能为每个实例创建
@@ -81,8 +82,9 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     #else
         BRDF brdf = GetBRDF(surface);
     #endif
-    
-    float3 color = GetLighting(surface, brdf);
+
+    GI gi = GetGI(0.0);
+    float3 color = GetLighting(surface, brdf, gi);
     return float4(color, surface.alpha);
 }
 
