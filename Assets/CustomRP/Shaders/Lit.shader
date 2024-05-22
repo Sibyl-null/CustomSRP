@@ -20,6 +20,11 @@ Shader "CustomRP/Lit"
     
     SubShader
     {
+        HLSLINCLUDE
+        #include "../ShaderLibrary/Common.hlsl"
+		#include "LitInput.hlsl"
+        ENDHLSL
+        
         Pass
         {
             Tags { "LightMode" = "CustomLit" }
