@@ -10,12 +10,14 @@ namespace CustomRP.Examples
         private static readonly int CutoffId = Shader.PropertyToID("_Cutoff");
         private static readonly int MetallicId = Shader.PropertyToID("_Metallic");
         private static readonly int SmoothnessId = Shader.PropertyToID("_Smoothness");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
         private static MaterialPropertyBlock _propertyBlock;
         
         [SerializeField] private Color _baseColor = Color.white;
         [SerializeField, Range(0, 1)] private float _cutoff = 0.5f;
         [SerializeField, Range(0, 1)] private float _metallic = 0f;
         [SerializeField, Range(0, 1)] private float _smoothness = 0.5f;
+        [SerializeField, ColorUsage(false, true)] private Color _emissionColor = Color.black;
 
         private void OnValidate()
         {
@@ -34,6 +36,7 @@ namespace CustomRP.Examples
             _propertyBlock.SetFloat(CutoffId, _cutoff);
             _propertyBlock.SetFloat(MetallicId, _metallic);
             _propertyBlock.SetFloat(SmoothnessId, _smoothness);
+            _propertyBlock.SetColor(EmissionColorId, _emissionColor);
             GetComponent<Renderer>().SetPropertyBlock(_propertyBlock);
         }
         
@@ -41,6 +44,7 @@ namespace CustomRP.Examples
         public void RandomColor()
         {
             _baseColor = new Color(Random.value, Random.value, Random.value, 1);
+            _emissionColor = new Color(Random.value, Random.value, Random.value, 1);
             Setup();
         }
     }

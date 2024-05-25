@@ -11,6 +11,10 @@ Shader "CustomRP/Lit"
         
         _Metallic("Metallic", Range(0, 1)) = 0
         _Smoothness("Smoothness", Range(0, 1)) = 0.5
+        
+        [NoScaleOffset] _EmissionMap("Emission Map", 2D) = "white" {}
+        [HDR] _EmissionColor("Emission Color", Color) = (0, 0, 0, 0)
+        
         [Toggle(_PREMULTIPLY_ALPHA)] _PremulAlpha("Premultiply Alpha", Float) = 0
         
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Src Blend", Float) = 1
