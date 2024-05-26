@@ -49,11 +49,15 @@ float4 MetaPassFragment(Varyings input) : SV_TARGET
     BRDF brdf = GetBRDF(surface);
     
     float4 meta = 0.0;
-    if (unity_MetaFragmentControl.x)
+    if (unity_MetaFragmentControl.x)    // x 分量表示请求漫反射项
     {
         meta = float4(brdf.diffuse, 1.0);
         meta.rgb += brdf.specular * brdf.roughness * 0.5;
         meta.rgb = min(PositivePow(meta.rgb, unity_OneOverOutputBoost), unity_MaxOutputValue);
+    }
+    else if (unity_MetaFragmentControl.y)   // y 分量表示请求自发光项
+    {
+        meta = float4(GetEmission(input.baseUV), 1.0);
     }
     return meta;
 }

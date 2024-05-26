@@ -72,6 +72,8 @@ namespace CustomRP.Editor
             _materials = materialEditor.targets.Cast<Material>().ToList();
             _properties = properties;
 
+            BakedEmission();
+
             EditorGUILayout.Space();
             _showPresets = EditorGUILayout.Foldout(_showPresets, "Presets", true);
             if (_showPresets)
@@ -85,6 +87,16 @@ namespace CustomRP.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 SetShadowCasterPass();
+            }
+        }
+
+        private void BakedEmission()
+        {
+            EditorGUI.BeginChangeCheck();
+            _editor.LightmapEmissionProperty();
+            if (EditorGUI.EndChangeCheck())
+            {
+                _materials.ForEach(m => m.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack);
             }
         }
 
