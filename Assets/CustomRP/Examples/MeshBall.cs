@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CustomRP.Examples
 {
@@ -50,9 +51,18 @@ namespace CustomRP.Examples
                 _propertyBlock.SetFloatArray(CutoffId, _cutoffs);
                 _propertyBlock.SetFloatArray(MetallicId, _metallic);
                 _propertyBlock.SetFloatArray(SmoothnessId, _smoothness);
+                
+                Vector3[] positions = new Vector3[_matrices.Length];
+                for (int i = 0; i < positions.Length; i++)
+                    positions[i] = _matrices[i].GetColumn(3);   // 矩阵第三列是位移
+
+                SphericalHarmonicsL2[] lightProbes = new SphericalHarmonicsL2[_matrices.Length];
+                LightProbes.CalculateInterpolatedLightAndOcclusionProbes(positions, lightProbes, null);
+                _propertyBlock.CopySHCoefficientArraysFrom(lightProbes);
             }
 
-            Graphics.DrawMeshInstanced(_mesh, 0, _material, _matrices, _matrices.Length, _propertyBlock);
+            Graphics.DrawMeshInstanced(_mesh, 0, _material, _matrices, _matrices.Length, _propertyBlock,
+                ShadowCastingMode.On, true, 0, null, LightProbeUsage.CustomProvided);
         }
     }
 }
