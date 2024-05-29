@@ -87,6 +87,7 @@ namespace CustomRP.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 SetShadowCasterPass();
+                CopyLightMappingProperties();
             }
         }
 
@@ -97,6 +98,24 @@ namespace CustomRP.Editor
             if (EditorGUI.EndChangeCheck())
             {
                 _materials.ForEach(m => m.globalIlluminationFlags &= ~MaterialGlobalIlluminationFlags.EmissiveIsBlack);
+            }
+        }
+
+        private void CopyLightMappingProperties()
+        {
+            MaterialProperty mainTex = FindProperty("_MainTex", _properties, false);
+            MaterialProperty baseMap = FindProperty("_BaseMap", _properties, false);
+            if (mainTex != null && baseMap != null)
+            {
+                mainTex.textureValue = baseMap.textureValue;
+                mainTex.textureScaleAndOffset = baseMap.textureScaleAndOffset;
+            }
+
+            MaterialProperty color = FindProperty("_Color", _properties, false);
+            MaterialProperty baseColor = FindProperty("_BaseColor", _properties, false);
+            if (color != null && baseColor != null)
+            {
+                color.colorValue = baseColor.colorValue;
             }
         }
 
