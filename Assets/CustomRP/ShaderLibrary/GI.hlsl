@@ -6,6 +6,9 @@
 TEXTURE2D(unity_Lightmap);
 SAMPLER(sampler_unity_Lightmap);
 
+TEXTURE2D(unity_ShadowMask);
+SAMPLER(sampler_unity_ShadowMask);
+
 TEXTURE3D_FLOAT(unity_ProbeVolumeSH);
 SAMPLER(sampler_unity_ProbeVolumeSH);
 
@@ -25,6 +28,7 @@ SAMPLER(sampler_unity_ProbeVolumeSH);
 struct GI
 {
     float3 diffuse;
+    ShadowMask shadowMask;
 };
 
 float3 SampleLightProbe(Surface surfaceWS)
@@ -77,10 +81,27 @@ float3 SampleLightMap(float2 lightMapUV)
 #endif // LIGHTMAP_ON
 }
 
+float4 SampleBakedShadows(float2 lightMapUV)
+{
+#ifdef LIGHTMAP_ON
+    return SAMPLE_TEXTURE2D(unity_ShadowMask, sampler_unity_ShadowMask, lightMapUV);
+#else
+    return 1.0;
+#endif
+}
+
 GI GetGI(float2 lightMapUV, Surface surfaceWS)
 {
     GI gi;
     gi.diffuse = SampleLightMap(lightMapUV) + SampleLightProbe(surfaceWS);
+    gi.shadowMask.distance = false;
+    gi.shadowMask.shadows = 1.0;
+
+#ifdef _SHADOW_MASK_DISTANCE
+    // 这使 distance 的值成为编译时常量，使用该值并不会导致动态分支
+    gi.shadowMask.distance = true;
+    gi.shadowMask.shadows = SampleBakedShadows(lightMapUV);
+#endif
     return gi;
 }
 
