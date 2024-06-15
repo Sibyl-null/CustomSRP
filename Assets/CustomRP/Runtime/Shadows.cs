@@ -36,6 +36,11 @@ namespace CustomRP.Runtime
             "_CASCADE_BLEND_SOFT",
             "_CASCADE_BLEND_DITHER"
         };
+
+        private static readonly string[] ShadowMaskKeywords =
+        {
+            "_SHADOW_MASK_DISTANCE",
+        };
         
         private static readonly ShadowedDirectionalLight[] ShadowedDirectionalLights = new ShadowedDirectionalLight[MaxShadowedDirectionalLightCount];
         private static readonly Matrix4x4[] DirShadowMatrices = new Matrix4x4[MaxShadowedDirectionalLightCount * MaxCascadeCount];
@@ -49,6 +54,7 @@ namespace CustomRP.Runtime
         private readonly CommandBuffer _buffer = new() { name = BufferName };
         
         private int _shadowedDirectionalLightCount;
+        private bool _useShadowMask;
 
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
         {
@@ -57,6 +63,7 @@ namespace CustomRP.Runtime
             _shadowSettings = shadowSettings;
 
             _shadowedDirectionalLightCount = 0;
+            _useShadowMask = false;
         }
 
         /**
@@ -74,6 +81,13 @@ namespace CustomRP.Runtime
             // 如果光源影响了至少一个阴影投射对象，则返回 true
             if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
                 return Vector3.zero;
+
+            LightBakingOutput lightBaking = light.bakingOutput;
+            if (lightBaking.lightmapBakeType == LightmapBakeType.Mixed &&
+                lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask)
+            {
+                _useShadowMask = true;
+            }
             
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
@@ -99,6 +113,11 @@ namespace CustomRP.Runtime
                 _buffer.GetTemporaryRT(DirShadowAtlasId, 1, 1, 32, 
                     FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
             }
+            
+            _buffer.BeginSample(BufferName);
+            SetKeywords(ShadowMaskKeywords, _useShadowMask ? 0 : -1);
+            _buffer.EndSample(BufferName);
+            ExecuteBuffer();
         }
 
         private void RenderDirectionalShadows()
