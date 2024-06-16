@@ -112,6 +112,7 @@ namespace CustomRP.Runtime
                                 | PerObjectData.LightProbe 
                                 | PerObjectData.LightProbeProxyVolume 
                                 | PerObjectData.ShadowMask
+                                | PerObjectData.OcclusionProbe
             };
             drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
@@ -133,6 +134,7 @@ namespace CustomRP.Runtime
                                 | PerObjectData.LightProbe 
                                 | PerObjectData.LightProbeProxyVolume 
                                 | PerObjectData.ShadowMask
+                                | PerObjectData.OcclusionProbe
             };
             drawingSettings.SetShaderPassName(1, LitShaderTagId);
             FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.transparent);
