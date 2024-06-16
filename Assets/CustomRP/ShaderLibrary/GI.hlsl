@@ -81,11 +81,20 @@ float3 SampleLightMap(float2 lightMapUV)
 #endif // LIGHTMAP_ON
 }
 
-float4 SampleBakedShadows(float2 lightMapUV)
+float4 SampleBakedShadows(float2 lightMapUV, Surface surfaceWS)
 {
 #ifdef LIGHTMAP_ON
     return SAMPLE_TEXTURE2D(unity_ShadowMask, sampler_unity_ShadowMask, lightMapUV);
 #else
+    if (unity_ProbeVolumeParams.x)
+    {
+        return SampleProbeOcclusion(
+            TEXTURE3D_ARGS(unity_ProbeVolumeSH, sampler_unity_ProbeVolumeSH),
+            surfaceWS.position, unity_ProbeVolumeWorldToObject,
+            unity_ProbeVolumeParams.y, unity_ProbeVolumeParams.z,
+            unity_ProbeVolumeMin.xyz, unity_ProbeVolumeSizeInv.xyz);
+    }
+
     return unity_ProbesOcclusion;
 #endif
 }
@@ -100,7 +109,7 @@ GI GetGI(float2 lightMapUV, Surface surfaceWS)
 #ifdef _SHADOW_MASK_DISTANCE
     // 这使 distance 的值成为编译时常量，使用该值并不会导致动态分支
     gi.shadowMask.distance = true;
-    gi.shadowMask.shadows = SampleBakedShadows(lightMapUV);
+    gi.shadowMask.shadows = SampleBakedShadows(lightMapUV, surfaceWS);
 #endif
     return gi;
 }
