@@ -60,8 +60,10 @@ namespace CustomRP.Examples
                         positions[i] = _matrices[i].GetColumn(3);   // 矩阵第三列是位移
 
                     SphericalHarmonicsL2[] lightProbes = new SphericalHarmonicsL2[_matrices.Length];
-                    LightProbes.CalculateInterpolatedLightAndOcclusionProbes(positions, lightProbes, null);
+                    Vector4[] occlusionProbes = new Vector4[_matrices.Length];
+                    LightProbes.CalculateInterpolatedLightAndOcclusionProbes(positions, lightProbes, occlusionProbes);
                     _propertyBlock.CopySHCoefficientArraysFrom(lightProbes);
+                    _propertyBlock.CopyProbeOcclusionArrayFrom(occlusionProbes);
                 }
             }
 
