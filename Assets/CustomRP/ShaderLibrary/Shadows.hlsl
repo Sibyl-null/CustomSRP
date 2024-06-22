@@ -132,16 +132,8 @@ float FilterDirectionalShadow(float3 positionSTS)
 #endif
 }
 
-/** 返回因阴影造成的光照衰减系数 */
-float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
+float GetCascadedShadow(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
 {
-#ifndef _RECEIVE_SHADOWS
-    return 1.0;
-#endif
-    
-    if (directional.strength <= 0.0)
-        return 1.0;
-
     float3 normalBias = surfaceWS.normal * directional.normalBias * _CascadeData[global.cascadeIndex].y;
     float3 positionSTS = mul(_DirectionalShadowMatrices[directional.tileIndex], float4(surfaceWS.position + normalBias, 1)).xyz;
     float shadow = FilterDirectionalShadow(positionSTS);
@@ -154,8 +146,40 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
         shadow = lerp(FilterDirectionalShadow(positionSTS), shadow, global.cascadeBlend);
     }
 
+    return  shadow;
+}
+
+float GetBakedShadow(ShadowMask mask)
+{
+    if (mask.distance)
+        return mask.shadows.r;      // ShadowMask 贴图数据存储在 r 通道中
+
+    return 1.0;
+}
+
+float MixBakedAndRealtimeShadows(ShadowData global, float shadow, float strength)
+{
+    float baked = GetBakedShadow(global.shadowMask);
+    if (global.shadowMask.distance)
+        shadow = baked;
+
     // 出于艺术考量或表示半透明表面的阴影，灯光的阴影强度可以被降低
-    return lerp(1.0, shadow, directional.strength);
+    return lerp(1.0, shadow, strength);
+}
+
+/** 返回因阴影造成的光照衰减系数 */
+float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowData global, Surface surfaceWS)
+{
+#ifndef _RECEIVE_SHADOWS
+    return 1.0;
+#endif
+    
+    if (directional.strength <= 0.0)
+        return 1.0;
+
+    float shadow = GetCascadedShadow(directional, global, surfaceWS);
+    shadow = MixBakedAndRealtimeShadows(global, shadow, directional.strength);
+    return shadow;
 }
 
 #endif // CUSTOM_SHADOWS_INCLUDED
