@@ -161,10 +161,12 @@ float MixBakedAndRealtimeShadows(ShadowData global, float shadow, float strength
 {
     float baked = GetBakedShadow(global.shadowMask);
     if (global.shadowMask.distance)
-        shadow = baked;
+    {
+        shadow = lerp(baked, shadow, global.strength);
+        return lerp(1.0, shadow, strength);
+    }
 
-    // 出于艺术考量或表示半透明表面的阴影，灯光的阴影强度可以被降低
-    return lerp(1.0, shadow, strength);
+    return lerp(1.0, shadow, strength * global.strength);
 }
 
 /** 返回因阴影造成的光照衰减系数 */
