@@ -103,10 +103,14 @@ GI GetGI(float2 lightMapUV, Surface surfaceWS)
 {
     GI gi;
     gi.diffuse = SampleLightMap(lightMapUV) + SampleLightProbe(surfaceWS);
+    gi.shadowMask.always = false;
     gi.shadowMask.distance = false;
     gi.shadowMask.shadows = 1.0;
-
-#ifdef _SHADOW_MASK_DISTANCE
+    
+#ifdef _SHADOW_MASK_ALWAYS
+    gi.shadowMask.always = true;
+    gi.shadowMask.shadows = SampleBakedShadows(lightMapUV, surfaceWS);
+#elif _SHADOW_MASK_DISTANCE
     // 这使 distance 的值成为编译时常量，使用该值并不会导致动态分支
     gi.shadowMask.distance = true;
     gi.shadowMask.shadows = SampleBakedShadows(lightMapUV, surfaceWS);
