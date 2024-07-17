@@ -77,10 +77,6 @@ namespace CustomRP.Runtime
 
             if (light.shadows == LightShadows.None || light.shadowStrength <= 0f)
                 return Vector3.zero;
-            
-            // 如果光源影响了至少一个阴影投射对象，则返回 true
-            if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
-                return Vector3.zero;
 
             LightBakingOutput lightBaking = light.bakingOutput;
             if (lightBaking.lightmapBakeType == LightmapBakeType.Mixed &&
@@ -88,6 +84,10 @@ namespace CustomRP.Runtime
             {
                 _useShadowMask = true;
             }
+            
+            // 如果光源影响了至少一个阴影投射对象，则返回 true
+            if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
+                return new Vector3(-light.shadowStrength, 0f, 0f);
             
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
