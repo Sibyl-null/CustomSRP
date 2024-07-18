@@ -108,6 +108,7 @@ struct DirectionalShadowData
     float strength;          // 阴影强度
     int tileIndex;           // 图集索引
     float normalBias;        // 法线偏移量
+    int shadowMaskChannel;   // 阴影遮罩通道
 };
 
 float SampleDirectionalShadowAtlas(float3 positionSTS)  // positionSTS: shadow texture space position
@@ -151,25 +152,28 @@ float GetCascadedShadow(DirectionalShadowData directional, ShadowData global, Su
     return  shadow;
 }
 
-float GetBakedShadow(ShadowMask mask)
+float GetBakedShadow(ShadowMask mask, int channel)
 {
     if (mask.always || mask.distance)
-        return mask.shadows.r;      // ShadowMask 贴图数据存储在 r 通道中
+    {
+        if (channel >= 0)
+            return mask.shadows[channel];
+    }
 
     return 1.0;
 }
 
-float GetBakedShadow(ShadowMask mask, float strength)
+float GetBakedShadow(ShadowMask mask, int channel, float strength)
 {
     if (mask.always || mask.distance)
-        return lerp(1.0, GetBakedShadow(mask), strength);
+        return lerp(1.0, GetBakedShadow(mask, channel), strength);
 
     return 1.0;
 }
 
-float MixBakedAndRealtimeShadows(ShadowData global, float shadow, float strength)
+float MixBakedAndRealtimeShadows(ShadowData global, float shadow, int shadowMaskChannel, float strength)
 {
-    float baked = GetBakedShadow(global.shadowMask);
+    float baked = GetBakedShadow(global.shadowMask, shadowMaskChannel);
 
     if (global.shadowMask.always)
     {
@@ -195,10 +199,10 @@ float GetDirectionalShadowAttenuation(DirectionalShadowData directional, ShadowD
 #endif
     
     if (directional.strength * global.strength <= 0.0)
-        return GetBakedShadow(global.shadowMask, abs(directional.strength));
+        return GetBakedShadow(global.shadowMask, directional.shadowMaskChannel, abs(directional.strength));
 
     float shadow = GetCascadedShadow(directional, global, surfaceWS);
-    shadow = MixBakedAndRealtimeShadows(global, shadow, directional.strength);
+    shadow = MixBakedAndRealtimeShadows(global, shadow, directional.shadowMaskChannel, directional.strength);
     return shadow;
 }
 
