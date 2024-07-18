@@ -69,26 +69,28 @@ namespace CustomRP.Runtime
 
         /**
          * 尝试为指定方向光在阴影图集中保留空间，并存储渲染它们所需的信息
-         * 返回 Vector3, x 表示光源的阴影强度，y 表示在阴影图集中的索引, z 表示阴影的法线偏移
+         * 返回 Vector4, x 表示光源的阴影强度，y 表示在阴影图集中的索引, z 表示阴影的法线偏移, w 表示阴影遮罩通道
          */
-        public Vector3 ReserveDirectionalShadow(Light light, int visibleLightIndex)
+        public Vector4 ReserveDirectionalShadow(Light light, int visibleLightIndex)
         {
             if (_shadowedDirectionalLightCount >= MaxShadowedDirectionalLightCount)
-                return Vector3.zero;
+                return new Vector4(0, 0, 0, -1);
 
             if (light.shadows == LightShadows.None || light.shadowStrength <= 0f)
-                return Vector3.zero;
+                return new Vector4(0, 0, 0, -1);
 
+            float maskChannel = -1;
             LightBakingOutput lightBaking = light.bakingOutput;
             if (lightBaking.lightmapBakeType == LightmapBakeType.Mixed &&
                 lightBaking.mixedLightingMode == MixedLightingMode.Shadowmask)
             {
                 _useShadowMask = true;
+                maskChannel = lightBaking.occlusionMaskChannel;
             }
             
             // 如果光源影响了至少一个阴影投射对象，则返回 true
             if (_cullingResults.GetShadowCasterBounds(visibleLightIndex, out _) == false)
-                return new Vector3(-light.shadowStrength, 0f, 0f);
+                return new Vector4(-light.shadowStrength, 0f, 0f, maskChannel);
             
             ShadowedDirectionalLights[_shadowedDirectionalLightCount] = new ShadowedDirectionalLight()
             {
@@ -97,9 +99,10 @@ namespace CustomRP.Runtime
                 nearPlaneOffset = light.shadowNearPlane
             };
 
-            return new Vector3(light.shadowStrength,
+            return new Vector4(light.shadowStrength,
                 _shadowSettings.directional.cascadesCount * _shadowedDirectionalLightCount++,
-                light.shadowNormalBias);
+                light.shadowNormalBias,
+                maskChannel);
         }
         
         public void Render()
