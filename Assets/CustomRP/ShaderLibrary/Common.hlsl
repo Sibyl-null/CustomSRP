@@ -32,4 +32,12 @@ float DistanceSquared(float3 a, float3 b)
     return dot(a - b, a - b);
 }
 
+void ClipLOD(float2 positionCS, float fade)
+{
+    #ifdef LOD_FADE_CROSSFADE
+        float dither = InterleavedGradientNoise(positionCS.xy, 0);
+        clip(fade + (fade < 0.0 ? dither : -dither));
+    #endif
+}
+
 #endif // CUSTOM_COMMON_INCLUDED
